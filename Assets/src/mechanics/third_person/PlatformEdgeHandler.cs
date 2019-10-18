@@ -44,7 +44,6 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		if (!characterController.isGrounded &&
 			prevIsGrounded) {
 			SendMessage("RequestJump");
-			Debug.Log("HEEEYYY");
 		}
 
 		prevIsGrounded = characterController.isGrounded;

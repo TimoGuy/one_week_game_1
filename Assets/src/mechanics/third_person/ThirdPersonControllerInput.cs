@@ -20,6 +20,7 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	private float mvtBuildup;
 	private Vector2 normalizedInputVec;
 	void FixedUpdate () {
+		if (!characterController.isGrounded) return;
 		float inputX = Input.GetAxisRaw("Horizontal");
 		float inputY = Input.GetAxisRaw("Vertical");
 		Vector2 myNormInputVec = new Vector2(inputX, inputY).normalized;
@@ -39,7 +40,9 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	void Update () {
 		float prevY = moveVector.y;
 		moveVector =
-			(myCamera.forward * normalizedInputVec.y + myCamera.right * normalizedInputVec.x).normalized
+			(GetFlattenedForwardCamera() * normalizedInputVec.y
+				+ myCamera.right * normalizedInputVec.x)
+				.normalized
 			* mvtBuildup;
 		moveVector = new Vector3(moveVector.x, prevY, moveVector.z);
 		UpdateGravity();
@@ -51,13 +54,11 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 		moveVector.y = jumpHeight;
 	}
 
+	private Vector3 GetFlattenedForwardCamera () {
+		return new Vector3(myCamera.forward.x, 0, myCamera.forward.z).normalized;
+	}
+
 	private void UpdateGravity () {
-		// if (characterController.isGrounded) {
-		// 	gravityBuildup = 0;
-		// }
-		
-		// gravityBuildup += gravityConst * Time.deltaTime;
-		
 		moveVector.y -= gravityConst * Time.deltaTime;
 	}
 }

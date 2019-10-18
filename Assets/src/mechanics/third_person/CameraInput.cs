@@ -23,9 +23,6 @@ public class CameraInput : MonoBehaviour {
 	void Start () {
 		distance = Mathf.Clamp(distance, minDistance, maxDistance);
 		Reset();
-
-		mouseX = 0;
-		mouseY = 5;
 	}
 	
 	// Update is called once per frame
