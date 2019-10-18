@@ -6,6 +6,7 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	public float mvtSpeed = 5;
 	public float mvtAccel = 1;
 	public float gravityConst = 0.5f;
+	public float jumpHeight = 10;
 
 	private CharacterController characterController;
 
@@ -13,7 +14,6 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		characterController = GetComponent<CharacterController>();
-		gravityBuildup = 0;
 		mvtBuildup = 0;
 	}
 	
@@ -33,26 +33,31 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 		mvtBuildup = Mathf.Clamp(mvtBuildup, 0, mvtSpeed);
 	}
 
+	private Vector3 moveVector;
+
 	// Update is called once per frame
 	void Update () {
-		Vector3 moveVector =
-			(myCamera.forward * normalizedInputVec.y + myCamera.right * normalizedInputVec.x).normalized *
-			mvtBuildup *
-			Time.deltaTime;
-		moveVector = new Vector3(moveVector.x, 0, moveVector.z);
-		UpdateGravity(ref moveVector);
+		float prevY = moveVector.y;
+		moveVector =
+			(myCamera.forward * normalizedInputVec.y + myCamera.right * normalizedInputVec.x).normalized
+			* mvtBuildup;
+		moveVector = new Vector3(moveVector.x, prevY, moveVector.z);
+		UpdateGravity();
 
-		characterController.Move(moveVector);
+		characterController.Move(moveVector * Time.deltaTime);
 	}
 
-	private float gravityBuildup;
-	private void UpdateGravity (ref Vector3 moveVector) {
-		if (characterController.isGrounded) {
-			gravityBuildup = 0;
-		} else {
-			gravityBuildup += gravityConst * Time.deltaTime;
-		}
+	public void RequestJump () {
+		moveVector.y = jumpHeight;
+	}
+
+	private void UpdateGravity () {
+		// if (characterController.isGrounded) {
+		// 	gravityBuildup = 0;
+		// }
 		
-		moveVector.y -= gravityBuildup;
+		// gravityBuildup += gravityConst * Time.deltaTime;
+		
+		moveVector.y -= gravityConst * Time.deltaTime;
 	}
 }
