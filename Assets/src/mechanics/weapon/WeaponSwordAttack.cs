@@ -43,8 +43,10 @@ public class WeaponSwordAttack : MonoBehaviour {
 	}
 
 	private void UpdateFacingDirection () {
-		transform.rotation =
-			Quaternion.LookRotation(new Vector3(player.velocity.x, 0, player.velocity.z));
+		var lookVec = new Vector3(player.velocity.x, 0, player.velocity.z);
+		if (lookVec != Vector3.zero)
+			transform.rotation =
+				Quaternion.LookRotation(lookVec);
 
 	}
 }

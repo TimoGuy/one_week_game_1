@@ -25,11 +25,13 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 		if (!platformEdgeHandler.IsOnGround()) return;
 		float inputX = Input.GetAxisRaw("Horizontal");
 		float inputY = Input.GetAxisRaw("Vertical");
-		Vector2 myNormInputVec = new Vector2(inputX, inputY).normalized;
 		
-		if (Mathf.Abs(myNormInputVec.x) + Mathf.Abs(myNormInputVec.y) > 0) {
+		if (inputX != 0 || inputY != 0) {
 			mvtBuildup += mvtAccel;
-			normalizedInputVec = myNormInputVec;
+			normalizedInputVec = new Vector2(inputX, inputY).normalized;
+			UpdateLookDirection(
+				CalcCameraLookDir(normalizedInputVec)
+			);
 		} else {
 			mvtBuildup -= mvtAccel;
 		}
@@ -39,11 +41,8 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	private Vector3 moveVector;
 	// Update is called once per frame
 	void Update () {
-		moveVector =
-			(GetFlattenedForwardCamera() * normalizedInputVec.y
-				+ myCamera.right * normalizedInputVec.x)
-				.normalized
-			* mvtBuildup;
+		var lookDir = GetLookDirection();
+		moveVector = lookDir.normalized * mvtBuildup;
 		moveVector = new Vector3(moveVector.x, FetchYVelo(), moveVector.z);
 
 		characterController.Move(moveVector * Time.deltaTime);
@@ -84,5 +83,22 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 		}
 
 		return yVelo;
+	}
+
+	private Vector3 CalcCameraLookDir (Vector2 normalizedInputVec) {
+		return GetFlattenedForwardCamera() * normalizedInputVec.y
+				+ myCamera.right * normalizedInputVec.x;
+	}
+
+	private Vector3 _lookVector = Vector3.zero;
+	private void UpdateLookDirection (Vector3 lookDirVec) {
+		if (lookDirVec.x != 0 || lookDirVec.z != 0) {
+			_lookVector = lookDirVec;
+			Debug.Log(_lookVector);
+		}
+	}
+
+	public Vector3 GetLookDirection () {
+		return _lookVector;
 	}
 }
