@@ -37,7 +37,7 @@ public class WeaponSwordAttack : MonoBehaviour {
 		weaponSword_animator.SetTrigger("Attack");
 	}
 
-	private bool IsCurrentlyIdling () {
+	public bool IsCurrentlyIdling () {
 		var animInfo = weaponSword_animator.GetCurrentAnimatorStateInfo(0);
 		return animInfo.IsName("idle");
 	}

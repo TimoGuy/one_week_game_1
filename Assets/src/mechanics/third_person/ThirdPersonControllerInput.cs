@@ -3,6 +3,7 @@ using System.Collections;
 
 public class ThirdPersonControllerInput : MonoBehaviour {
 	public Transform myCamera;
+	public WeaponSwordAttack weaponSwordAttack;
 	public float mvtSpeed = 5;
 	public float mvtAccel = 1;
 	public float gravityConst = 0.5f;
@@ -23,8 +24,11 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	private Vector2 normalizedInputVec;
 	void FixedUpdate () {
 		if (!platformEdgeHandler.IsOnGround()) return;
-		float inputX = Input.GetAxisRaw("Horizontal");
-		float inputY = Input.GetAxisRaw("Vertical");
+		float inputX = 0, inputY = 0;
+		if (weaponSwordAttack.IsCurrentlyIdling()) {
+			inputX = Input.GetAxisRaw("Horizontal");
+			inputY = Input.GetAxisRaw("Vertical");
+		}
 		
 		if (inputX != 0 || inputY != 0) {
 			mvtBuildup += mvtAccel;
