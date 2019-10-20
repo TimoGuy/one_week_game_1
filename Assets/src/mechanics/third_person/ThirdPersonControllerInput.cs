@@ -98,7 +98,6 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	private void UpdateLookDirection (Vector3 lookDirVec) {
 		if (lookDirVec.x != 0 || lookDirVec.z != 0) {
 			_lookVector = lookDirVec;
-			Debug.Log(_lookVector);
 		}
 	}
 
