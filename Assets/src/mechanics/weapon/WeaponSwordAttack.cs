@@ -19,6 +19,10 @@ public class WeaponSwordAttack : MonoBehaviour {
 			UpdateAttackVariant();
 			Attack();
 		}
+
+		if (IsCurrentlyIdling()) {
+			UpdateFacingDirection();
+		}
 	}
 
 	private bool CheckWantToAttack () {
@@ -26,11 +30,21 @@ public class WeaponSwordAttack : MonoBehaviour {
 	}
 
 	private void UpdateAttackVariant () {
-
+		// TODO make more attack variants!
 	}
 
 	private void Attack () {
-		Debug.Log("Attack!!!");
 		weaponSword_animator.SetTrigger("Attack");
+	}
+
+	private bool IsCurrentlyIdling () {
+		var animInfo = weaponSword_animator.GetCurrentAnimatorStateInfo(0);
+		return animInfo.IsName("idle");
+	}
+
+	private void UpdateFacingDirection () {
+		transform.rotation =
+			Quaternion.LookRotation(new Vector3(player.velocity.x, 0, player.velocity.z));
+
 	}
 }
