@@ -25,7 +25,6 @@ public class SlimeEnemy : MonoBehaviour {
 
 		var q = new Quaternion();
 		q.SetLookRotation(lookAt);
-		Debug.Log(q.eulerAngles.y);
 		parentEnemyWrapper.rotation = q;
 	}
 
@@ -42,7 +41,8 @@ public class SlimeEnemy : MonoBehaviour {
 			_profile.GetPlayerTransform().position
 		);
 
-		if (dist <= playerAttackDist) {
+		if (_animator.GetBool(CHARGE_BOOL_NAME) &&
+			dist <= playerAttackDist) {
 			_animator.SetBool(ATTACK_BOOL_NAME, true);
 		} else if (dist <= playerChargeDist) {
 			// Charge!!!!

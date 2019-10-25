@@ -31,22 +31,15 @@ public class EnemyProfile : MonoBehaviour {
 	}
 
 	private void SaveInnerTransform () {
-		Debug.Log("Hey!");
-		_ietPosCopy = transform.position;
-		// _ietPosCopy.rotation = innerEnemyTrans.rotation;
-		// _ietPosCopy.localScale = innerEnemyTrans.localScale;
+		_ietPosCopy = transform.localPosition;
 	}
 
 	public void MoveToInnerTransAsOffset () {
-		Debug.Log(transform.position - _ietPosCopy);
 		parentEnemyWrapper.position +=
-			transform.position - _ietPosCopy;
-		// transform.rotation +=
-		// 	innerEnemyTrans.rotation - _ietPosCopy.rotation;
-		// transform.localScale +=
-		// 	innerEnemyTrans.localScale - _ietPosCopy.localScale;
+			parentEnemyWrapper.rotation
+			* (transform.localPosition - _ietPosCopy);
 
 		// Reset position of inner
-		transform.position = _ietPosCopy;
+		transform.localPosition = _ietPosCopy;
 	}
 }
