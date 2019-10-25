@@ -3,7 +3,7 @@ using System.Collections;
 
 public class EnemyProfile : MonoBehaviour {
 	public int attackPoints;
-	public Transform innerEnemyTrans;
+	public Transform parentEnemyWrapper;
 	private Vector3 _ietPosCopy = Vector3.zero;
 	public string triggerCodeFunction = "OnEnemyDie";
 	public MonoBehaviour triggerCode;
@@ -31,22 +31,22 @@ public class EnemyProfile : MonoBehaviour {
 	}
 
 	private void SaveInnerTransform () {
-		_ietPosCopy = innerEnemyTrans.localPosition;
+		Debug.Log("Hey!");
+		_ietPosCopy = transform.position;
 		// _ietPosCopy.rotation = innerEnemyTrans.rotation;
 		// _ietPosCopy.localScale = innerEnemyTrans.localScale;
 	}
 
 	public void MoveToInnerTransAsOffset () {
-		Debug.Log("Hey my duuude?!");
-		Debug.Log(innerEnemyTrans.position - _ietPosCopy);
-		transform.localPosition +=
-			innerEnemyTrans.localPosition - _ietPosCopy;
+		Debug.Log(transform.position - _ietPosCopy);
+		parentEnemyWrapper.position +=
+			transform.position - _ietPosCopy;
 		// transform.rotation +=
 		// 	innerEnemyTrans.rotation - _ietPosCopy.rotation;
 		// transform.localScale +=
 		// 	innerEnemyTrans.localScale - _ietPosCopy.localScale;
 
 		// Reset position of inner
-		innerEnemyTrans.localPosition = _ietPosCopy;
+		transform.position = _ietPosCopy;
 	}
 }
