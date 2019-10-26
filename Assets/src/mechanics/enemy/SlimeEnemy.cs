@@ -10,6 +10,7 @@ public class SlimeEnemy : MonoBehaviour {
 	public float playerAttackDist;
 	private const string ATTACK_BOOL_NAME = "isAttacking";
 	public float knockBackDist;
+	private const string KNOCKBACK_TRIGGER_NAME = "getHurt";
 
 	// Use this for initialization
 	void Start () {
@@ -27,6 +28,7 @@ public class SlimeEnemy : MonoBehaviour {
 			lookAt.Normalize();
 
 			parentEnemyWrapper.position -= lookAt * knockBackDist;
+			_animator.SetTrigger(KNOCKBACK_TRIGGER_NAME);
 		}
 	}
 
