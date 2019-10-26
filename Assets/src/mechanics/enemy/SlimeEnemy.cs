@@ -9,11 +9,25 @@ public class SlimeEnemy : MonoBehaviour {
 	private const string CHARGE_BOOL_NAME = "isCharging";
 	public float playerAttackDist;
 	private const string ATTACK_BOOL_NAME = "isAttacking";
+	public float knockBackDist;
 
 	// Use this for initialization
 	void Start () {
 		_profile = GetComponent<EnemyProfile>();
 		_animator = GetComponent<Animator>();
+	}
+
+	void OnTriggerEnter (Collider collider) {
+		if (collider.gameObject.tag == "Player Weapon") {
+			// Get hurt
+			Vector3 lookAt =
+				_profile.GetPlayerTransform().position
+				- transform.position;
+			lookAt.y = 0;
+			lookAt.Normalize();
+
+			parentEnemyWrapper.position -= lookAt * knockBackDist;
+		}
 	}
 
 	// Called by animation
