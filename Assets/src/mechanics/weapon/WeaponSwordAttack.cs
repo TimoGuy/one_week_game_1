@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class WeaponSwordAttack : MonoBehaviour {
-	public CharacterController player;
+	public ThirdPersonControllerInput player;
 	public Transform weaponSword;
 	public string attackVariantType = "none";
 
@@ -43,7 +43,8 @@ public class WeaponSwordAttack : MonoBehaviour {
 	}
 
 	private void UpdateFacingDirection () {
-		var lookVec = new Vector3(player.velocity.x, 0, player.velocity.z);
+		var lookVec = player.GetLookDirection();
+		lookVec.y = 0;
 		if (lookVec != Vector3.zero)
 			transform.rotation =
 				Quaternion.LookRotation(lookVec);
