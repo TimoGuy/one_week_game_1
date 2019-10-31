@@ -2,11 +2,15 @@
 using System.Collections;
 
 public class PlatformEdgeHandler : MonoBehaviour {
+	public enum PlayerState { NORMAL, HANGING_ON_EDGE };
+	public PlayerState playerState = PlayerState.NORMAL;
 	private ThirdPersonControllerInput player;
+	private CharacterController playerCC;
 
 	// Use this for initialization
 	void Start () {
 		player = GetComponent<ThirdPersonControllerInput>();
+		playerCC = GetComponent<CharacterController>();
 		isOnGround = false;
 		prevIsGrounded = false;
 	}
@@ -15,11 +19,31 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		FetchIsOnGround();
 	}
 
+	public Vector3 climbMvt = new Vector3(0, 1.75f, 0.75f);
+	public bool overrideEh;
 	// Update is called once per frame
 	void Update () {
-		UpdateJump();
-		if (!IsOnGround()) {
-			UpdateGrabEdgeWhileMidair();
+		if (playerState == PlayerState.NORMAL) {
+			UpdateJump();
+			if (!IsOnGround()) {
+				UpdateGrabEdgeWhileMidair();
+			}
+		} else if (playerState == PlayerState.HANGING_ON_EDGE) {
+			float inputX = Input.GetAxisRaw("Horizontal");
+			float inputY = Input.GetAxisRaw("Vertical");
+			if (inputX != 0 || inputY != 0 || overrideEh) {
+				Debug.Log("Undo!");
+				playerState = PlayerState.NORMAL;
+				player.enabled = true;
+				playerCC.enabled = true;
+
+				var lookVec = player.GetLookDirection();
+				lookVec.y = 0;
+				Vector3 jojo = Quaternion.Euler(lookVec) * climbMvt;
+				Debug.Log(jojo);
+				player.transform.position += jojo;
+				playerCC.Move(Vector3.zero);
+			}
 		}
 	}
 
@@ -48,7 +72,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		Ray ray = new Ray();
 		ray.origin = origin;
 		ray.direction = direction;
-		Debug.DrawRay(ray.origin, ray.direction, Color.red);
+		Debug.DrawRay(ray.origin, ray.direction, rayColor);
 
 		return Physics.Raycast(
 			ray,
@@ -103,6 +127,63 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		if (hitEdge && !hitHead) {	// Hit middle body to wall but miss upper body to wall
 			// Grab that ledge!!!
 			Debug.Log("Hey hey spiderman");
+			playerState = PlayerState.HANGING_ON_EDGE;
+			player.enabled = false;
+			playerCC.enabled = false;
+			InchAndAdjustWhileHanging(lookVec);
 		}
+	}
+
+	public float hangingTopOfPlatformOffset = 0.75f;
+	public float hangingDistAway = 0.5f;
+	public Vector3 inchFactor = new Vector3(0, 0.05f);
+	private void InchAndAdjustWhileHanging (Vector3 lookVec) {
+		RaycastHit hitInfo;
+
+		bool up = DoRaycast(
+			Color.yellow,
+			Origin(),
+			lookVec,
+			out hitInfo,
+			1.0f,
+			1 << LayerMask.NameToLayer("Ground")
+		);
+
+		if (up) {
+			// Inch up until no more collision
+			bool colliding = true;
+			while (colliding) {
+				transform.position += inchFactor;
+				colliding = DoRaycast(
+					Color.yellow,
+					Origin(),
+					lookVec,
+					out hitInfo,
+					1.0f,
+					1 << LayerMask.NameToLayer("Ground")
+				);
+			}
+		} else {
+			// Inch down until feel collision
+			bool colliding = false;
+			while (!colliding) {
+				transform.position -= inchFactor;
+				colliding = DoRaycast(
+					Color.yellow,
+					Origin() - inchFactor,
+					lookVec,
+					out hitInfo,
+					1.0f,
+					1 << LayerMask.NameToLayer("Ground")
+				);
+			}
+		}
+
+		var diff = Vector3.Distance(hitInfo.point, transform.position) - hangingDistAway;
+		transform.position += lookVec.normalized * diff;
+	}
+
+	private Vector3 Origin () {
+		return transform.position + new Vector3(0, hangingTopOfPlatformOffset);
 	}
 }
