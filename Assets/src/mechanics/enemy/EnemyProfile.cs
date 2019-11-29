@@ -8,12 +8,15 @@ public class EnemyProfile : MonoBehaviour {
 	public string triggerCodeFunction = "OnEnemyDie";
 	public MonoBehaviour triggerCode;
 	private Transform player;
+	public bool autoAddPlayerAsLockonTargeter = true;
 
 	// Use this for initialization
 	void Start () {
 		FindPlayer();
 		SaveInnerTransform();
-		GetComponent<ObjectLockonBehavior>().targeter = player;
+		
+		if (autoAddPlayerAsLockonTargeter)
+			GetComponent<ObjectLockonBehavior>().targeter = player.GetComponent<LockonTargeter>();
 	}
 
 	public void OnDie () {

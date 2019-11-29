@@ -2,8 +2,8 @@
 using System.Collections;
 
 public class ObjectLockonBehavior : MonoBehaviour {
-	public Transform targeter;		// Usually the player
-	public float canTargetDist = 5;
+	public LockonTargeter targeter;		// Usually the player
+	public float canTargetDist = 10;
 	public bool canTarget;
 	public bool targeted;
 
@@ -20,13 +20,17 @@ public class ObjectLockonBehavior : MonoBehaviour {
 	void FixedUpdate () {
 		float dist = Vector3.Distance(
 			transform.position,
-			targeter.position
+			targeter.transform.position
 		);
 
 		canTarget = dist <= canTargetDist;
 		if (canTarget && lockBtnDown) {
 			lockBtnDown = false;
-			targeted = !targeted;
+			SendToTargeterLockOnRequest();
 		}
+	}
+
+	private void SendToTargeterLockOnRequest () {
+		// targeter.
 	}
 }
