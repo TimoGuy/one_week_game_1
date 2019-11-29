@@ -13,6 +13,7 @@ public class EnemyProfile : MonoBehaviour {
 	void Start () {
 		FindPlayer();
 		SaveInnerTransform();
+		GetComponent<ObjectLockonBehavior>().targeter = player;
 	}
 
 	public void OnDie () {
