@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class LockonTargeter : MonoBehaviour {
+	public Transform lockingTarget;
 
 	// Use this for initialization
 	void Start () {
@@ -10,6 +11,24 @@ public class LockonTargeter : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		if (Input.GetButtonDown("Jump")) {
+			RemoveLockOntoObject();
+		}
+	}
+
+	public void LockOntoObjectRequest (ObjectLockonBehavior olb) {
+		if (lockingTarget != null)
+			return;
+
+		lockingTarget = olb.transform;
+		SendMessage("InvokeTargetMode", lockingTarget);
+	}
+
+	private void RemoveLockOntoObject () {
+		if (lockingTarget == null)
+			return;
+
+		lockingTarget = null;
+		SendMessage("UndoTargetMode");
 	}
 }

@@ -31,6 +31,6 @@ public class ObjectLockonBehavior : MonoBehaviour {
 	}
 
 	private void SendToTargeterLockOnRequest () {
-		// targeter.
+		targeter.LockOntoObjectRequest(this);
 	}
 }
