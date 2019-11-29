@@ -12,11 +12,15 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	private CharacterController characterController;
 	private PlatformEdgeHandler platformEdgeHandler;
 
+	public bool targetingMode;
+	private LockonTargeter targeterHandler;
+
 
 	// Use this for initialization
 	void Start () {
 		characterController = GetComponent<CharacterController>();
 		platformEdgeHandler = GetComponent<PlatformEdgeHandler>();
+		targeterHandler = GetComponent<LockonTargeter>();
 		mvtBuildup = 0;
 		SaveStartTransform();
 	}
@@ -118,6 +122,16 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	}
 
 	public Vector3 GetLookDirection () {
+		if (targetingMode) {
+			return targeterHandler.lockingTarget.position - transform.position;
+		}
 		return _lookVector;
+	}
+
+	void InvokeTargetMode () {
+		targetingMode = true;
+	}
+	void UndoTargetMode () {
+		targetingMode = false;
 	}
 }
