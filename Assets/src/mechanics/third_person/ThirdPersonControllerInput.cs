@@ -18,6 +18,7 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 		characterController = GetComponent<CharacterController>();
 		platformEdgeHandler = GetComponent<PlatformEdgeHandler>();
 		mvtBuildup = 0;
+		SaveStartTransform();
 	}
 	
 	private float mvtBuildup;
@@ -50,6 +51,21 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 		moveVector = new Vector3(moveVector.x, FetchYVelo(), moveVector.z);
 
 		characterController.Move(moveVector * Time.deltaTime);
+	}
+
+	private Vector3 __pos;
+	private Quaternion __rot;
+	private Vector3 __scal;
+	private void SaveStartTransform () {
+		__pos = transform.position;
+		__rot = transform.rotation;
+		__scal = transform.localScale;
+	}
+
+	public void ResetTransform () {
+		transform.position = __pos;
+		transform.rotation = __rot;
+		transform.localScale = __scal;
 	}
 
 	bool _reqJump = false;
