@@ -14,6 +14,7 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 
 	public bool targetingMode;
 	private LockonTargeter targeterHandler;
+	private CameraInput cameraInput;
 
 
 	// Use this for initialization
@@ -21,6 +22,7 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 		characterController = GetComponent<CharacterController>();
 		platformEdgeHandler = GetComponent<PlatformEdgeHandler>();
 		targeterHandler = GetComponent<LockonTargeter>();
+		cameraInput = myCamera.GetComponent<CameraInput>();
 		mvtBuildup = 0;
 		SaveStartTransform();
 	}
@@ -55,6 +57,11 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 		moveVector = new Vector3(moveVector.x, FetchYVelo(), moveVector.z);
 
 		characterController.Move(moveVector * Time.deltaTime);
+
+		if (targetingMode) {
+			var relative = GetFlattenedForwardCamera();
+			cameraInput.mouseX = Mathf.Atan2(relative.x, relative.z) * Mathf.Rad2Deg;
+		}
 	}
 
 	private Vector3 __pos;
@@ -78,7 +85,21 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	}
 
 	private Vector3 GetFlattenedForwardCamera () {
+		if (targetingMode) {
+			Vector3 lookDir = targeterHandler.lockingTarget.position - transform.position;
+			lookDir.y = 0;
+			return lookDir.normalized;
+		}
 		return new Vector3(myCamera.forward.x, 0, myCamera.forward.z).normalized;
+	}
+
+	private Vector3 GetFlattenedRightCamera () {
+		if (targetingMode) {
+			Vector3 lookDir = targeterHandler.lockingTarget.position - transform.position;
+			lookDir.y = 0;
+			return Quaternion.Euler(0, 90, 0) * lookDir.normalized;
+		}
+		return new Vector3(myCamera.right.x, 0, myCamera.right.z).normalized;
 	}
 
 	private bool _isJumping = false;
@@ -111,7 +132,7 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 
 	private Vector3 CalcCameraLookDir (Vector2 normalizedInputVec) {
 		return GetFlattenedForwardCamera() * normalizedInputVec.y
-				+ myCamera.right * normalizedInputVec.x;
+				+ GetFlattenedRightCamera() * normalizedInputVec.x;
 	}
 
 	private Vector3 _lookVector = Vector3.zero;
@@ -122,9 +143,6 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	}
 
 	public Vector3 GetLookDirection () {
-		if (targetingMode) {
-			return targeterHandler.lockingTarget.position - transform.position;
-		}
 		return _lookVector;
 	}
 

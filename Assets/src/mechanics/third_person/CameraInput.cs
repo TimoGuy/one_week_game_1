@@ -49,9 +49,9 @@ public class CameraInput : MonoBehaviour {
 	}
 
 	private Vector3 CalculateDesiredPosition (float rotX, float rotY) {
-		Vector3 dir = new Vector3(0, 0, -distance);
+		Vector3 dist = new Vector3(0, 0, -distance);
 		Quaternion rot = Quaternion.Euler(rotY, rotX, 0);
-		return targetLookAt.position + (rot * dir);
+		return targetLookAt.position + (rot * dist);
 	}
 
 	private void UpdatePosition (Vector3 newPos) {
