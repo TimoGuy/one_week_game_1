@@ -57,14 +57,14 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	private Quaternion __rot;
 	private Vector3 __scal;
 	private void SaveStartTransform () {
-		__pos = transform.position;
-		__rot = transform.rotation;
+		__pos = transform.localPosition;
+		__rot = transform.localRotation;
 		__scal = transform.localScale;
 	}
 
 	public void ResetTransform () {
-		transform.position = __pos;
-		transform.rotation = __rot;
+		transform.localPosition = __pos;
+		transform.localRotation = __rot;
 		transform.localScale = __scal;
 	}
 

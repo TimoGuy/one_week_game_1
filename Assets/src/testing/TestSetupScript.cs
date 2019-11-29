@@ -4,6 +4,7 @@ using System.Collections;
 public class TestSetupScript : MonoBehaviour {
 	public GameObject PlayerWrapper;
 	public bool ActivateTestSetup;
+	public string InputString = "1";
 
 	// Use this for initialization
 	void Start () {
@@ -12,11 +13,11 @@ public class TestSetupScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (ActivateTestSetup) {
+		if (ActivateTestSetup || Input.GetKeyDown(InputString)) {
 			ActivateTestSetup = false;
 
-			PlayerWrapper.transform.position = transform.position;
 			PlayerWrapper.GetComponentInChildren<ThirdPersonControllerInput>().ResetTransform();
+			PlayerWrapper.transform.position = transform.position;
 		}
 	}
 }
