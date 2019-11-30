@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class PlatformEdgeHandler : MonoBehaviour {
-	public enum PlayerState { NORMAL, HANGING_ON_EDGE };
+	public enum PlayerState { NORMAL, HANGING_ON_EDGE, CLIMBING_FREE };
 	public PlayerState playerState = PlayerState.NORMAL;
 	private ThirdPersonControllerInput player;
 	private CharacterController playerCC;
@@ -27,22 +27,39 @@ public class PlatformEdgeHandler : MonoBehaviour {
 			UpdateJump();
 			if (!IsOnGround()) {
 				UpdateGrabEdgeWhileMidair();
+			} else {
+				bool approaching = playerCC.velocity.x != 0 || playerCC.velocity.z != 0;
+				if (approaching) {
+					UpdateClimbWallWhileMoving();
+				}
 			}
-		} else if (playerState == PlayerState.HANGING_ON_EDGE) {
+		} else {
 			float inputX = Input.GetAxisRaw("Horizontal");
 			float inputY = Input.GetAxisRaw("Vertical");
-			if (inputX != 0 || inputY != 0 || overrideEh) {
-				Debug.Log("Undo!");
-				playerState = PlayerState.NORMAL;
-				player.enabled = true;
-				playerCC.enabled = true;
+			if (playerState == PlayerState.HANGING_ON_EDGE) {
+				if (inputX != 0 || inputY != 0 || overrideEh) {
+					Debug.Log("Undo!");
+					playerState = PlayerState.NORMAL;
+					player.enabled = true;
+					playerCC.enabled = true;
 
-				var lookVec = player.GetLookDirection();
-				lookVec.y = 0;
-				Vector3 jojo = Quaternion.Euler(lookVec) * climbMvt;
-				Debug.Log(jojo);
-				player.transform.position += jojo;
-				playerCC.Move(Vector3.zero);
+					var lookVec = player.GetLookDirection();
+					lookVec.y = 0;
+					Vector3 jojo = Quaternion.Euler(lookVec) * climbMvt;
+					Debug.Log(jojo);
+					player.transform.position += jojo;
+					playerCC.Move(Vector3.zero);
+				}
+			} else if (playerState == PlayerState.CLIMBING_FREE) {
+				if (inputX != 0 || inputY != 0) {
+					playerCC.Move(new Vector3(inputX, inputY, 0).normalized * 5 * Time.deltaTime);
+
+					if (!ShootRaycastAndCheckIfHittingClimbableWall()) {
+						Debug.Log("Heeyyyyyy get me off!");
+						playerState = PlayerState.NORMAL;
+						player.enabled = true;
+					}
+				}
 			}
 		}
 	}
@@ -103,27 +120,37 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		prevIsGrounded = IsOnGround();
 	}
 
-	private void UpdateGrabEdgeWhileMidair () {
-		var lookVec = player.GetLookDirection();
-		lookVec.y = 0;
-
-		var garb = new RaycastHit();
-		bool hitEdge = DoRaycast(
+	private void RaycastChecks (
+		Vector3 lookVec,
+		out RaycastHit rchit,
+		out bool hitEdge,
+		out bool hitHead
+	) {
+		hitEdge = DoRaycast(
 			Color.red,
 			transform.position,
 			lookVec,
-			out garb,
+			out rchit,
 			1.0f,
 			1 << LayerMask.NameToLayer("Ground")
 		);
-		bool hitHead = DoRaycast(
+		hitHead = DoRaycast(
 			Color.red,
 			transform.position + Vector3.up,
 			lookVec,
-			out garb,
+			out rchit,
 			1.0f,
 			1 << LayerMask.NameToLayer("Ground")
 		);
+	}
+
+	private void UpdateGrabEdgeWhileMidair () {
+		var lookVec = player.GetLookDirection();
+		lookVec.y = 0;
+		var rchit = new RaycastHit();
+		bool hitEdge, hitHead;
+		RaycastChecks(lookVec, out rchit, out hitEdge, out hitHead);
+
 		if (hitEdge && !hitHead) {	// Hit middle body to wall but miss upper body to wall
 			// Grab that ledge!!!
 			Debug.Log("Hey hey spiderman");
@@ -131,7 +158,34 @@ public class PlatformEdgeHandler : MonoBehaviour {
 			player.enabled = false;
 			playerCC.enabled = false;
 			InchAndAdjustWhileHanging(lookVec);
+		} else if (hitEdge && hitHead) {	// Investigate to see if it's climbable
+			CheckIfClimbableWall(rchit, lookVec);
 		}
+	}
+
+	private void UpdateClimbWallWhileMoving () {
+		var lookVec = player.GetLookDirection();
+		lookVec.y = 0;
+		var rchit = new RaycastHit();
+		bool hitEdge, hitHead;
+		RaycastChecks(lookVec, out rchit, out hitEdge, out hitHead);
+
+		if (hitEdge && hitHead) {	// Investigate to see if it's climbable
+			CheckIfClimbableWall(rchit, lookVec);
+		}
+	}
+
+	private bool ShootRaycastAndCheckIfHittingClimbableWall () {
+		var lookVec = player.GetLookDirection();
+		lookVec.y = 0;
+		var rchit = new RaycastHit();
+		bool hitEdge, hitHead;
+		RaycastChecks(lookVec, out rchit, out hitEdge, out hitHead);
+
+		if (hitEdge && hitHead) {
+			return rchit.transform.tag == "Climbable";
+		}
+		return false;
 	}
 
 	public float hangingTopOfPlatformOffset = 0.75f;
@@ -180,6 +234,21 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		}
 
 		var diff = Vector3.Distance(hitInfo.point, transform.position) - hangingDistAway;
+		transform.position += lookVec.normalized * diff;
+	}
+
+	private void CheckIfClimbableWall (RaycastHit raycastHit, Vector3 lookVec) {
+		if (raycastHit.transform.tag == "Climbable") {
+			Debug.Log("Player is now climbing!");
+			playerState = PlayerState.CLIMBING_FREE;
+			player.enabled = false;
+			// playerCC.enabled = false;
+			SetupClimbing(raycastHit, lookVec);
+		}
+	}
+	
+	private void SetupClimbing (RaycastHit rchit, Vector3 lookVec) {
+		var diff = Vector3.Distance(rchit.point, transform.position) - hangingDistAway;
 		transform.position += lookVec.normalized * diff;
 	}
 
