@@ -43,7 +43,7 @@ public class CameraInput : MonoBehaviour {
 
 	private void HandlePlayerInput () {
 		mouseX += Input.GetAxis("Mouse X") * xMouseSensitivity;
-        // mouseY -= Input.GetAxis("Mouse Y") * yMouseSensitivity;
+        mouseY -= Input.GetAxis("Mouse Y") * yMouseSensitivity;
 
 		mouseY = ClampAngle(mouseY, yMinLimit, yMaxLimit);
 	}
