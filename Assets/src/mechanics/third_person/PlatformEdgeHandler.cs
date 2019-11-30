@@ -126,11 +126,14 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		out bool hitEdge,
 		out bool hitHead
 	) {
+		var rchit1 = new RaycastHit();
+		var rchit2 = new RaycastHit();
+		
 		hitEdge = DoRaycast(
 			Color.red,
 			transform.position,
 			lookVec,
-			out rchit,
+			out rchit1,
 			1.0f,
 			1 << LayerMask.NameToLayer("Ground")
 		);
@@ -138,10 +141,13 @@ public class PlatformEdgeHandler : MonoBehaviour {
 			Color.red,
 			transform.position + Vector3.up,
 			lookVec,
-			out rchit,
+			out rchit2,
 			1.0f,
 			1 << LayerMask.NameToLayer("Ground")
 		);
+
+		if (!hitHead) rchit = rchit1;
+		else rchit = rchit2;
 	}
 
 	private void UpdateGrabEdgeWhileMidair () {
@@ -182,7 +188,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		bool hitEdge, hitHead;
 		RaycastChecks(lookVec, out rchit, out hitEdge, out hitHead);
 
-		if (hitEdge && hitHead) {
+		if (hitEdge || hitHead) {
 			return rchit.transform.tag == "Climbable";
 		}
 		return false;
