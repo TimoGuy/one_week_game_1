@@ -55,12 +55,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 					Vector3 movement = Quaternion.LookRotation(climbingDirNormal) * new Vector3(inputX, inputY, 1).normalized * 5 * Time.deltaTime;
 					Debug.Log("HAHAHAH\n" + climbingDirNormal);
 					playerCC.Move(movement);
-
-					if (IsOnGround()) {
-						Debug.Log("Heeyyyyyy get me off!");
-						playerState = PlayerState.NORMAL;
-						player.enabled = true;
-					}
+					ProcessClimbing();
 				}
 			}
 		}
@@ -160,12 +155,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		RaycastChecks(lookVec, out rchit, out hitEdge, out hitHead);
 
 		if (hitEdge && !hitHead) {	// Hit middle body to wall but miss upper body to wall
-			// Grab that ledge!!!
-			Debug.Log("Hey hey spiderman");
-			playerState = PlayerState.HANGING_ON_EDGE;
-			player.enabled = false;
-			playerCC.enabled = false;
-			InchAndAdjustWhileHanging(lookVec);
+			InvokeHanging(lookVec);
 		} else if (hitEdge && hitHead) {	// Investigate to see if it's climbable
 			CheckIfClimbableWall(rchit, lookVec);
 		}
@@ -250,6 +240,42 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		climbingDirNormal = (-rchit.normal);
 		mov.y += 0.25f;
 		transform.position += mov;
+	}
+
+	private void ProcessClimbing () {
+		if (IsOnGround()) {
+			UndoClimbing();
+			return;
+		}
+
+		var lookVec = climbingDirNormal;
+		lookVec.y = 0;
+		var rchit = new RaycastHit();
+		bool hitEdge, hitHead;
+		RaycastChecks(lookVec, out rchit, out hitEdge, out hitHead);
+
+		if (!hitEdge) {
+			UndoClimbing();
+		} else if (hitEdge && !hitHead) {
+			InvokeHanging(lookVec);
+		} else if (hitEdge && hitHead) {
+			// Do nothing
+		}
+	}
+
+	private void InvokeHanging (Vector3 lookVec) {
+		// Grab that ledge!!!
+		Debug.Log("Hey hey spiderman");
+		playerState = PlayerState.HANGING_ON_EDGE;
+		player.enabled = false;
+		playerCC.enabled = false;
+		InchAndAdjustWhileHanging(lookVec);
+	}
+
+	private void UndoClimbing () {
+		Debug.Log("Heeyyyyyy get me off!");
+		playerState = PlayerState.NORMAL;
+		player.enabled = true;
 	}
 
 	private Vector3 Origin () {
