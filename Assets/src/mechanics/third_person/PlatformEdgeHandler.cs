@@ -276,6 +276,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		Debug.Log("Heeyyyyyy get me off!");
 		playerState = PlayerState.NORMAL;
 		player.enabled = true;
+		prevIsGrounded = false;		// Prevents jumping off
 	}
 
 	private Vector3 Origin () {
