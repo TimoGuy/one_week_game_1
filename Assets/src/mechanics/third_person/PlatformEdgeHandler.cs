@@ -19,7 +19,6 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		FetchIsOnGround();
 	}
 
-	public Vector3 climbMvt = new Vector3(0, 1.75f, 0.75f);
 	public bool overrideEh;
 	// Update is called once per frame
 	void Update () {
@@ -43,12 +42,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 					player.enabled = true;
 					playerCC.enabled = true;
 
-					var lookVec = player.GetLookDirection();
-					lookVec.y = 0;
-					Vector3 jojo = Quaternion.LookRotation(lookVec) * climbMvt;
-					Debug.Log(jojo);
-					player.transform.position += jojo;
-					playerCC.Move(Vector3.zero);
+					ClimbOutOfLedge(new Vector3(0, 1.75f, 0.75f));
 				}
 			} else if (playerState == PlayerState.CLIMBING_FREE) {
 				if (inputX != 0 || inputY != 0) {
@@ -128,7 +122,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		
 		hitEdge = DoRaycast(
 			Color.red,
-			transform.position,
+			transform.position + new Vector3(0, -0.1f),
 			lookVec,
 			out rchit1,
 			1.0f,
@@ -170,6 +164,8 @@ public class PlatformEdgeHandler : MonoBehaviour {
 
 		if (hitEdge && hitHead) {	// Investigate to see if it's climbable
 			CheckIfClimbableWall(rchit, lookVec);
+		} else if (hitEdge && !hitHead) {	// Climb over the small wall!
+			ClimbOutOfLedge(new Vector3(0, 1.75f, 1.25f));
 		}
 	}
 
@@ -229,6 +225,19 @@ public class PlatformEdgeHandler : MonoBehaviour {
 			player.enabled = false;
 			// playerCC.enabled = false;
 			SetupClimbing(raycastHit, lookVec);
+		} else if (IsOnGround()) {
+			RaycastHit hitInfo;
+			bool hitAbove = DoRaycast(
+				Color.red,
+				transform.position + Vector3.up,
+				Vector3.up,
+				out hitInfo,
+				1.0f,
+				1 << LayerMask.NameToLayer("Ground")
+			);
+			if (!hitAbove) {
+				InvokeHanging(lookVec);
+			}
 		}
 	}
 	
@@ -261,6 +270,17 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		} else if (hitEdge && hitHead) {
 			// Do nothing
 		}
+	}
+
+	private void ClimbOutOfLedge (Vector3 climbMvt) {
+		var lookVec = player.GetLookDirection();
+		lookVec.y = 0;
+		Vector3 jojo = Quaternion.LookRotation(lookVec) * climbMvt;
+		Debug.Log(jojo);
+		player.transform.position += jojo;
+
+		playerCC.Move(new Vector3(0, player.FetchYVelo(), 0));		// Force player to ground
+		prevIsGrounded = false;		// Prevent accidental jumping
 	}
 
 	private void InvokeHanging (Vector3 lookVec) {

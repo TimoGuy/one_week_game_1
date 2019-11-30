@@ -103,7 +103,7 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	}
 
 	private bool _isJumping = false;
-	private float FetchYVelo () {
+	public float FetchYVelo () {
 		float yVelo = characterController.velocity.y;
 		if (_isJumping) {
 			if (yVelo >= 0 && platformEdgeHandler.IsOnGround()) {
