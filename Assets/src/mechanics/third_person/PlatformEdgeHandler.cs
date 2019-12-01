@@ -279,7 +279,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		Debug.Log(jojo);
 		player.transform.position += jojo;
 
-		playerCC.Move(new Vector3(0, player.FetchYVelo(), 0));		// Force player to ground
+		playerCC.Move(new Vector3(0, player.FetchYVelo(false), 0));		// Force player to ground
 		prevIsGrounded = false;		// Prevent accidental jumping
 	}
 
