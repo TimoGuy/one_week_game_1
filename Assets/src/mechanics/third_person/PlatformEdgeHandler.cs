@@ -59,12 +59,16 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	private bool prevIsGrounded;
 	private RaycastHit hitInfo;
 	private void FetchIsOnGround () {		// Only call once per frame
-		isOnGround = DoRaycast(
+		isOnGround = DoDownwardsIsOnGroundRaycast(out this.hitInfo, 0.5f);
+	}
+
+	private bool DoDownwardsIsOnGroundRaycast (out RaycastHit hitInfo, float rayDist) {
+		return DoRaycast(
 			Color.red,
 			transform.position + Vector3.down,
 			Vector3.down,
 			out hitInfo,
-			0.5f,
+			rayDist,
 			1 << LayerMask.NameToLayer("Ground")
 		);
 	}
@@ -252,7 +256,8 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	}
 
 	private void ProcessClimbing () {
-		if (IsOnGround()) {
+		RaycastHit garb;
+		if (DoDownwardsIsOnGroundRaycast(out garb, 0.1f)) {
 			UndoClimbing();
 			return;
 		}
