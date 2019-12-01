@@ -140,7 +140,7 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	}
 
 	private Vector3 _lookVector = Vector3.zero;
-	private void UpdateLookDirection (Vector3 lookDirVec) {
+	public void UpdateLookDirection (Vector3 lookDirVec) {
 		if (lookDirVec.x != 0 || lookDirVec.z != 0) {
 			_lookVector = lookDirVec;
 		}

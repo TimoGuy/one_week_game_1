@@ -47,8 +47,8 @@ public class PlatformEdgeHandler : MonoBehaviour {
 				}
 			} else if (playerState == PlayerState.CLIMBING_FREE) {
 				if (inputX != 0 || inputY != 0) {
-					Vector3 movement = Quaternion.LookRotation(climbingDirNormal) * new Vector3(inputX, inputY, 1).normalized * 5 * Time.deltaTime;
-					Debug.Log("HAHAHAH\n" + climbingDirNormal);
+					Vector3 movement = Quaternion.LookRotation(player.GetLookDirection()) * new Vector3(inputX, inputY, 1).normalized * 5 * Time.deltaTime;
+					Debug.Log("HAHAHAH\n" + player.GetLookDirection());
 					playerCC.Move(movement);
 					ProcessClimbing();
 				}
@@ -246,12 +246,11 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		}
 	}
 	
-	private Vector3 climbingDirNormal;
 	private void SetupClimbing (RaycastHit rchit, Vector3 lookVec) {
 		var diff = Vector3.Distance(rchit.point, transform.position) - hangingDistAway;
 		Vector3 mov = lookVec.normalized * diff;
 		Debug.Log("LookVec!!!\n" + rchit.normal);
-		climbingDirNormal = (-rchit.normal);
+		player.UpdateLookDirection(-rchit.normal);
 		mov.y += 0.25f;
 		transform.position += mov;
 	}
@@ -263,7 +262,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 			return;
 		}
 
-		var lookVec = climbingDirNormal;
+		var lookVec = player.GetLookDirection();
 		lookVec.y = 0;
 		var rchit = new RaycastHit();
 		bool hitEdge, hitHead;
