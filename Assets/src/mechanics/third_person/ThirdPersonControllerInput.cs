@@ -23,7 +23,7 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 		platformEdgeHandler = GetComponent<PlatformEdgeHandler>();
 		targeterHandler = GetComponent<LockonTargeter>();
 		cameraInput = myCamera.GetComponent<CameraInput>();
-		mvtBuildup = 0;
+		ResetMvtBuildup();
 		SaveStartTransform();
 	}
 	
@@ -62,6 +62,10 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 			var relative = GetFlattenedForwardCamera();
 			cameraInput.mouseX = Mathf.Atan2(relative.x, relative.z) * Mathf.Rad2Deg;
 		}
+	}
+
+	public void ResetMvtBuildup () {
+		mvtBuildup = 0;
 	}
 
 	private Vector3 __pos;

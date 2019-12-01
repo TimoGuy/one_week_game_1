@@ -40,6 +40,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 					Debug.Log("Undo!");
 					playerState = PlayerState.NORMAL;
 					player.enabled = true;
+					player.ResetMvtBuildup();
 					playerCC.enabled = true;
 
 					ClimbOutOfLedge(new Vector3(0, 1.75f, 0.75f));
@@ -301,6 +302,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		Debug.Log("Heeyyyyyy get me off!");
 		playerState = PlayerState.NORMAL;
 		player.enabled = true;
+		player.ResetMvtBuildup();
 		prevIsGrounded = false;		// Prevents jumping off
 	}
 
