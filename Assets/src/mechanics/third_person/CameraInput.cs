@@ -43,6 +43,9 @@ public class CameraInput : MonoBehaviour {
 		Vector3 newPos = CalculateDesiredPosition(mouseX, mouseY);
 			
 		UpdatePosition(newPos);
+
+		transform.position += shakeOffset;
+		shakeOffset = Vector3.zero;
 	}
 
 	private void Reset () {
@@ -85,11 +88,16 @@ public class CameraInput : MonoBehaviour {
 	}
 
 	float ClampAngle (float angle, float min, float max) {
-	while (angle < -360 || angle > 360) {
-		if (angle < -360) angle += 360;
-		if (angle > 360) angle -= 360;
+		while (angle < -360 || angle > 360) {
+			if (angle < -360) angle += 360;
+			if (angle > 360) angle -= 360;
+		}
+
+		return Mathf.Clamp(angle, min, max);
 	}
 
-    return Mathf.Clamp(angle, min, max);
- }
+	private Vector3 shakeOffset = Vector3.zero;
+	void Message_ShakeCam (float shakeAmount) {
+		shakeOffset = Random.insideUnitSphere * shakeAmount;
+	}
 }
