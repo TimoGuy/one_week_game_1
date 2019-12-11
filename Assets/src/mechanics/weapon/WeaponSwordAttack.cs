@@ -30,7 +30,12 @@ public class WeaponSwordAttack : MonoBehaviour {
 	}
 
 	private void UpdateAttackVariant () {
-		// TODO make more attack variants!
+		if (Input.GetAxisRaw("Horizontal") != 0 ||
+			Input.GetAxisRaw("Vertical") != 0) {
+			weaponSword_animator.SetBool("IsInputtingMvt", true);
+		} else {
+			weaponSword_animator.SetBool("IsInputtingMvt", false);
+		}
 	}
 
 	private void Attack () {
