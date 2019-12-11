@@ -9,20 +9,28 @@ public class CameraInput : MonoBehaviour {
 	public float distance = 5;
 	public float minDistance = 3;
 	public float maxDistance = 10;
+	public float distanceBuffer = 1;
 
 	public float xMouseSensitivity = 5;
 	public float yMouseSensitivity = 5;
 	public float mouseWheelSensitivity = 5;
 	public float yMinLimit = -40;
-	public float yMaxLimit = 80; 
+	public float yMaxLimit = 80;
 
 
 	public float mouseX, mouseY = 5;
 
 	// Use this for initialization
 	void Start () {
+		Cursor.lockState = CursorLockMode.Locked;
 		distance = Mathf.Clamp(distance, minDistance, maxDistance);
 		Reset();
+	}
+
+	void Update () {
+		if (Input.GetButtonDown("Fire1")) {
+			Cursor.lockState = CursorLockMode.Locked;
+		}
 	}
 	
 	// Update is called once per frame
@@ -51,7 +59,18 @@ public class CameraInput : MonoBehaviour {
 	private Vector3 CalculateDesiredPosition (float rotX, float rotY) {
 		Vector3 dist = new Vector3(0, 0, -distance);
 		Quaternion rot = Quaternion.Euler(rotY, rotX, 0);
+		dist.z = -GetDistanceWithoutColliding(rot * dist, distance);
 		return targetLookAt.position + (rot * dist);
+	}
+
+	private float GetDistanceWithoutColliding (Vector3 direction, float maxDistance) {
+		RaycastHit rHit;
+		bool hit = PlatformEdgeHandler.DoRaycast(Color.magenta, targetLookAt.position, direction, out rHit, maxDistance, 1 << LayerMask.NameToLayer("Ground"));
+		if (hit) {
+			return rHit.distance - distanceBuffer;
+		}
+
+		return maxDistance - distanceBuffer;
 	}
 
 	private void UpdatePosition (Vector3 newPos) {

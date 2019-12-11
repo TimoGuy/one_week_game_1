@@ -74,7 +74,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		);
 	}
 
-	private bool DoRaycast (
+	public static bool DoRaycast (
 		Color rayColor,
 		Vector3 origin,
 		Vector3 direction,
