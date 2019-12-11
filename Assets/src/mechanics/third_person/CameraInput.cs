@@ -65,7 +65,13 @@ public class CameraInput : MonoBehaviour {
 
 	private float GetDistanceWithoutColliding (Vector3 direction, float maxDistance) {
 		RaycastHit rHit;
-		bool hit = PlatformEdgeHandler.DoRaycast(Color.magenta, targetLookAt.position, direction, out rHit, maxDistance, 1 << LayerMask.NameToLayer("Ground"));
+		bool hit = PlatformEdgeHandler.DoRaycast(
+			Color.magenta,
+			targetLookAt.position,
+			direction,
+			out rHit,
+			maxDistance,
+			1 << LayerMask.NameToLayer("Ground"));
 		if (hit) {
 			return rHit.distance - distanceBuffer;
 		}
