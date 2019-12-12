@@ -14,16 +14,10 @@ public class CameraShake : MonoBehaviour {
 	public float shakeAmount = 0.7f;
 	public float decreaseFactor = 1.0f;
 	
-	Vector3 originalPos;
-	
 	void Awake () {
 		if (camTransform == null) {
 			camTransform = Camera.main.transform;
 		}
-	}
-	
-	void OnEnable () {
-		originalPos = camTransform.localPosition;
 	}
 
 	void LateUpdate () {
