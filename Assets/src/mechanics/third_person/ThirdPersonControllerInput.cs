@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ThirdPersonControllerInput : MonoBehaviour {
+public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	public Transform myCamera;
 	public WeaponSwordAttack weaponSwordAttack;
 	public float mvtSpeed = 5;
@@ -15,6 +15,8 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	public bool targetingMode;
 	private LockonTargeter targeterHandler;
 	private CameraInput cameraInput;
+
+	private EnemyWeapon.AttackEffectType currentMode = EnemyWeapon.AttackEffectType.NORMAL;
 
 
 	// Use this for initialization
@@ -50,18 +52,36 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	}
 
 	private Vector3 moveVector;
+	private float stunTimer = 0;
 	// Update is called once per frame
 	void Update () {
-		var lookDir = GetLookDirection();
-		moveVector = lookDir.normalized * mvtBuildup;
-		moveVector = new Vector3(moveVector.x, FetchYVelo(), moveVector.z);
+		Debug.Log("MoveVector: " + moveVector);
+		if (currentMode == EnemyWeapon.AttackEffectType.NORMAL) {
+			var lookDir = GetLookDirection();
+			moveVector = lookDir.normalized * mvtBuildup;
+			moveVector = new Vector3(moveVector.x, FetchYVelo(), moveVector.z);
 
-		characterController.Move(moveVector * Time.deltaTime);
+			characterController.Move(moveVector * Time.deltaTime);
 
-		if (targetingMode) {
-			var relative = GetFlattenedForwardCamera();
-			cameraInput.mouseX = Mathf.Atan2(relative.x, relative.z) * Mathf.Rad2Deg;
-		}
+			if (targetingMode) {
+				var relative = GetFlattenedForwardCamera();
+				cameraInput.mouseX = Mathf.Atan2(relative.x, relative.z) * Mathf.Rad2Deg;
+			}
+		} else if (currentMode == EnemyWeapon.AttackEffectType.KNOCKBACK) {
+			characterController.Move(moveVector * Time.deltaTime);
+			moveVector.y -= gravityConst * Time.deltaTime;
+			stunTimer -= Time.deltaTime;
+			if (platformEdgeHandler.IsOnGround() && stunTimer <= 0) {
+				stunTimer = 0;
+				currentMode = EnemyWeapon.AttackEffectType.NORMAL;
+			}
+		} else if (currentMode == EnemyWeapon.AttackEffectType.STUN) {
+			stunTimer -= Time.deltaTime;
+			if (stunTimer <= 0) {
+				stunTimer = 0;
+				currentMode = EnemyWeapon.AttackEffectType.NORMAL;
+			}
+		}		
 	}
 
 	public void ResetMvtBuildup () {
@@ -155,5 +175,27 @@ public class ThirdPersonControllerInput : MonoBehaviour {
 	}
 	void UndoTargetMode () {
 		targetingMode = false;
+	}
+
+	// Messages
+	public void ReceiveDamage (int damage) {
+		currentMode = EnemyWeapon.AttackEffectType.NORMAL;
+		Debug.Log("Received " + damage + " damage!!");
+	}
+
+	public void ReceiveKnockback (object[] parameters) {
+		ReceiveKnockback((Vector3)parameters[0], (float)parameters[1], (float)parameters[2]);
+	}
+
+	public void ReceiveKnockback (Vector3 knockbackOrigin, float knockbackYShootup, float knockbackForce) {
+		currentMode = EnemyWeapon.AttackEffectType.KNOCKBACK;
+		moveVector = (transform.position - knockbackOrigin).normalized * knockbackForce;
+		moveVector.y += knockbackYShootup;
+		stunTimer = 0.25f;	// Just to get off the ground
+	}
+
+	public void ReceiveStun (float stunTime) {
+		currentMode = EnemyWeapon.AttackEffectType.STUN;
+		stunTimer = stunTime;
 	}
 }
