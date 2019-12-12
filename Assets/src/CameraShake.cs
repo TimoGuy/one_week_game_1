@@ -32,7 +32,6 @@ public class CameraShake : MonoBehaviour {
 			shakeDuration -= Time.deltaTime * decreaseFactor;
 		} else {
 			shakeDuration = 0f;
-			camTransform.localPosition = originalPos;
 		}
 	}
 
