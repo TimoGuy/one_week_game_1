@@ -56,6 +56,12 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	// Update is called once per frame
 	void Update () {
 		Debug.Log("MoveVector: " + moveVector);
+		if (stunTimer > 0) {
+			stunTimer -= Time.deltaTime;
+		} else if (stunTimer < 0) {
+			stunTimer = 0;
+		}
+
 		if (currentMode == EnemyWeapon.AttackEffectType.NORMAL) {
 			var lookDir = GetLookDirection();
 			moveVector = lookDir.normalized * mvtBuildup;
@@ -70,15 +76,11 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 		} else if (currentMode == EnemyWeapon.AttackEffectType.KNOCKBACK) {
 			characterController.Move(moveVector * Time.deltaTime);
 			moveVector.y -= gravityConst * Time.deltaTime;
-			stunTimer -= Time.deltaTime;
 			if (platformEdgeHandler.IsOnGround() && stunTimer <= 0) {
-				stunTimer = 0;
 				currentMode = EnemyWeapon.AttackEffectType.NORMAL;
 			}
 		} else if (currentMode == EnemyWeapon.AttackEffectType.STUN) {
-			stunTimer -= Time.deltaTime;
 			if (stunTimer <= 0) {
-				stunTimer = 0;
 				currentMode = EnemyWeapon.AttackEffectType.NORMAL;
 			}
 		}		
@@ -179,8 +181,11 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 
 	// Messages
 	public void ReceiveDamage (int damage) {
+		if (stunTimer > 0) return;
 		currentMode = EnemyWeapon.AttackEffectType.NORMAL;
 		Debug.Log("Received " + damage + " damage!!");
+		stunTimer = 0.25f;	// Just so that player isn't attacked all the time
+		PlayHurtSound();
 	}
 
 	public void ReceiveKnockback (object[] parameters) {
@@ -188,6 +193,7 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	}
 
 	public void ReceiveKnockback (Vector3 knockbackOrigin, float knockbackYShootup, float knockbackForce) {
+		if (currentMode == EnemyWeapon.AttackEffectType.KNOCKBACK) return;
 		currentMode = EnemyWeapon.AttackEffectType.KNOCKBACK;
 		moveVector = (transform.position - knockbackOrigin).normalized * knockbackForce;
 		moveVector.y += knockbackYShootup;
@@ -195,7 +201,12 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	}
 
 	public void ReceiveStun (float stunTime) {
+		if (currentMode == EnemyWeapon.AttackEffectType.STUN) return;
 		currentMode = EnemyWeapon.AttackEffectType.STUN;
 		stunTimer = stunTime;
+	}
+
+	private void PlayHurtSound () {
+		GetComponent<AudioSource>().Play(0);
 	}
 }

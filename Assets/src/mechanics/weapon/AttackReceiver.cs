@@ -10,11 +10,9 @@ public interface IAttackReceiver {
 public class AttackReceiver : MonoBehaviour {
 	public string ReceivingTag = "Untagged";
 
-	void OnTriggerEnter (Collider other) {
+	void OnTriggerStay (Collider other) {
 		if (other.gameObject.tag == ReceivingTag) {
-			Debug.Log("Attacked!!! " + other.GetComponent<EnemyWeapon>().attackEffect.ToString());
 			ProcessAttack(other.GetComponent<EnemyWeapon>());
-			GetComponent<AudioSource>().Play(0);
 		}
 	}
 
