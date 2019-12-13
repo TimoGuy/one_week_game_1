@@ -55,7 +55,6 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	private float stunTimer = 0;
 	// Update is called once per frame
 	void Update () {
-		Debug.Log("MoveVector: " + moveVector);
 		if (stunTimer > 0) {
 			stunTimer -= Time.deltaTime;
 		} else if (stunTimer < 0) {
