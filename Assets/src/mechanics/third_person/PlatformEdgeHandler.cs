@@ -169,7 +169,6 @@ public class PlatformEdgeHandler : MonoBehaviour {
 
 		if (hitEdge && hitHead) {	// Investigate to see if it's climbable
 			CheckIfClimbableWall(rchit, lookVec);
-			player.UpdateLookDirection(-rchit.normal);
 		} else if (hitEdge && !hitHead) {	// Climb over the small wall!
 			ClimbOutOfLedge(new Vector3(0, 1.75f, 1.25f));
 		}
@@ -274,7 +273,8 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		} else if (hitEdge && !hitHead) {
 			InvokeHanging(lookVec);
 		} else if (hitEdge && hitHead) {
-			// Do nothing
+			// Update look direction
+			player.UpdateLookDirection(-rchit.normal);
 		}
 	}
 
