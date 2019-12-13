@@ -195,6 +195,9 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	public void ReceiveKnockback (Vector3 knockbackOrigin, float knockbackYShootup, float knockbackForce) {
 		if (currentMode == EnemyWeapon.AttackEffectType.KNOCKBACK) return;
 		currentMode = EnemyWeapon.AttackEffectType.KNOCKBACK;
+		SendMessage("UndoClimbing");
+		SendMessage("PreventAccidentalJumping");
+		SendMessage("DebounceEvents", 0.5f);
 		moveVector = (transform.position - knockbackOrigin).normalized * knockbackForce;
 		moveVector.y += knockbackYShootup;
 		stunTimer = 0.25f;	// Just to get off the ground

@@ -6,6 +6,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	public PlayerState playerState = PlayerState.NORMAL;
 	private ThirdPersonControllerInput player;
 	private CharacterController playerCC;
+	public CameraInput cameraInput;
 
 	// Use this for initialization
 	void Start () {
@@ -23,13 +24,16 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (playerState == PlayerState.NORMAL) {
-			UpdateJump();
-			if (!IsOnGround()) {
-				UpdateGrabEdgeWhileMidair();
-			} else {
-				bool approaching = playerCC.velocity.x != 0 || playerCC.velocity.z != 0;
-				if (approaching) {
-					UpdateClimbWallWhileMoving();
+			if (CanCheckEvents()) {
+				UpdateJump();
+
+				if (!IsOnGround()) {
+					UpdateGrabEdgeWhileMidair();
+				} else {
+					bool approaching = playerCC.velocity.x != 0 || playerCC.velocity.z != 0;
+					if (approaching) {
+						UpdateClimbWallWhileMoving();
+					}
 				}
 			}
 		} else {
@@ -51,6 +55,10 @@ public class PlatformEdgeHandler : MonoBehaviour {
 					Debug.Log("HAHAHAH\n" + player.GetLookDirection());
 					playerCC.Move(movement);
 					ProcessClimbing();
+
+					var lookDir = player.GetLookDirection();
+					cameraInput.mouseX = Mathf.Atan2(lookDir.x, lookDir.z) * Mathf.Rad2Deg;
+					cameraInput.mouseY = 0;
 				}
 			}
 		}
@@ -286,7 +294,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		player.transform.position += jojo;
 
 		playerCC.Move(new Vector3(0, player.FetchYVelo(false), 0));		// Force player to ground
-		prevIsGrounded = false;		// Prevent accidental jumping
+		PreventAccidentalJumping();
 	}
 
 	private void InvokeHanging (Vector3 lookVec) {
@@ -298,15 +306,34 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		InchAndAdjustWhileHanging(lookVec);
 	}
 
-	private void UndoClimbing () {
+	void UndoClimbing () {
 		Debug.Log("Heeyyyyyy get me off!");
 		playerState = PlayerState.NORMAL;
 		player.enabled = true;
 		player.ResetMvtBuildup();
-		prevIsGrounded = false;		// Prevents jumping off
+		PreventAccidentalJumping();
 	}
 
 	private Vector3 Origin () {
 		return transform.position + new Vector3(0, hangingTopOfPlatformOffset);
+	}
+
+	void PreventAccidentalJumping () {
+		prevIsGrounded = false;		// Prevent accidental jumping
+	}
+
+	float debounceTime = 0;
+	void DebounceEvents (float time) {
+		debounceTime = time;
+	}
+
+	private bool CanCheckEvents () {
+		if (debounceTime > 0) {
+			debounceTime -= Time.deltaTime;
+		} else if (debounceTime <= 0) {
+			debounceTime = 0;
+			return true;
+		}
+		return false;
 	}
 }
