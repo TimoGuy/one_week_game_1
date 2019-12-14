@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(EnemyWeapon)), CanEditMultipleObjects]
@@ -52,3 +53,4 @@ public class EnemyWeaponEditor : Editor {
 		serializedObject.ApplyModifiedProperties();
 	}
 }
+#endif
