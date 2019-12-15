@@ -32,9 +32,9 @@ public class WeaponSwordAttack : MonoBehaviour {
 	private void UpdateAttackVariant () {
 		if (Input.GetAxisRaw("Horizontal") != 0 ||
 			Input.GetAxisRaw("Vertical") != 0) {
-			weaponSword_animator.SetBool("IsInputtingMvt", true);
+			weaponSword_animator.SetBool("IsVerticalSlash", true);
 		} else {
-			weaponSword_animator.SetBool("IsInputtingMvt", false);
+			weaponSword_animator.SetBool("IsVerticalSlash", false);
 		}
 	}
 
@@ -54,5 +54,10 @@ public class WeaponSwordAttack : MonoBehaviour {
 			transform.rotation =
 				Quaternion.LookRotation(lookVec);
 
+	}
+
+	public bool IsVerticalSlash () {
+		// Warning: only is reliable if player is currently animating a slash
+		return weaponSword_animator.GetBool("IsVerticalSlash");
 	}
 }
