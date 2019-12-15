@@ -19,6 +19,10 @@ public class BossFightHandler : MonoBehaviour {
 		bubbleScores.SendMessage("StompedReceiveShock");
 	}
 
+	void RandomChooseToDoLazerOrStomp () {
+		animator.SetBool("DoLazerBeam", Random.value > 0.5f);
+	}
+
 	// Received Message
 	void BreakCircle () {
 		animator.SetTrigger("CircleBroken");
