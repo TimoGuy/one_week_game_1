@@ -20,7 +20,9 @@ public class BossFightHandler : MonoBehaviour {
 	}
 
 	void RandomChooseToDoLazerOrStomp () {
-		animator.SetBool("DoLazerBeam", Random.value > 0.5f);
+		if (!animator.GetBool("Override_DoLazerBeam")) {
+			animator.SetBool("DoLazerBeam", Random.value > 0.5f);
+		}
 	}
 
 	// Received Message
