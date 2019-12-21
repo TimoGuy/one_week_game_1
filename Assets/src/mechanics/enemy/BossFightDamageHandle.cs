@@ -6,10 +6,12 @@ public class BossFightDamageHandle : MonoBehaviour {
 	private float stunTimer;
 
 	void Start () {
+#if UNITY_EDITOR
 		if (lifeManager == null) {
 			Debug.LogError("lifeManager assignment is required");
 			UnityEditor.EditorApplication.isPlaying = false;
 		}
+#endif
 
 		SendMessageUpwards("SetLifeInAnimator", lifeManager.GetCurrentLife());
 	}

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	public Transform myCamera;
@@ -29,10 +30,12 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 		ResetMvtBuildup();
 		SaveStartTransform();
 
+#if UNITY_EDITOR
 		if (lifeManager == null) {
 			Debug.LogError("lifeManager assignment is required");
 			UnityEditor.EditorApplication.isPlaying = false;
 		}
+#endif
 	}
 	
 	private float mvtBuildup;
@@ -191,6 +194,10 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 		lifeManager.SendMessage("DecrementLife", damage);
 		stunTimer = 0.25f;	// Just so that player isn't attacked all the time
 		PlayHurtSound();
+
+		if (lifeManager.GetCurrentLife() <= 0) {
+			SceneManager.LoadScene("scene_player_defeated");
+		}
 	}
 
 	public void ReceiveKnockback (object[] parameters) {
