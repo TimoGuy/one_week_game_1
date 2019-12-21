@@ -1,19 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(Animator))]
 public class BossFightHandler : MonoBehaviour {
 	public GameObject phase2;
 	public BossFightBubbleScores bubbleScores;
 	public Transform progLazerContainer;
+	public int phase2StartLife = 5;
 	private Animator animator;
 
-	void Start () {
+	void Awake () {
 		animator = GetComponent<Animator>();
 	}
 
 	void CheckIfTurnOnPhase2 () {
-		animator.SetBool("Phase2", true);
-		phase2.SetActive(true);
+		if (animator.GetBool("Phase2")) {
+			phase2.SetActive(true);
+		} else {
+			phase2.SetActive(false);
+		}
 	}
 
 	void SendStompToBubble () {
@@ -34,8 +40,21 @@ public class BossFightHandler : MonoBehaviour {
 		progLazerContainer.localRotation = Quaternion.Euler(0, -playerAngFromOrigin + 180, 0);
 	}
 
+	void BossDieEvent () {
+		SceneManager.LoadScene("scene_defeated_boss");
+	}
+
 	// Received Message
 	void BreakCircle () {
 		animator.SetTrigger("CircleBroken");
+	}
+
+	void SetLifeInAnimator (int life) {
+		animator.SetInteger("Life", life);
+		if (life <= phase2StartLife) {
+			animator.SetBool("Phase2", true);
+		} else {
+			animator.SetBool("Phase2", false);
+		}
 	}
 }

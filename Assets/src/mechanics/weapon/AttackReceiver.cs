@@ -17,6 +17,11 @@ public class AttackReceiver : MonoBehaviour {
 	}
 
 	private void ProcessAttack (EnemyWeapon weapon) {
+		if (weapon == null) {
+			Debug.LogError("Weapon on attack receiving end is Null");
+			return;
+		}
+
 		SendMessage(
 			"ReceiveDamage",
 			weapon.damageToDeal,

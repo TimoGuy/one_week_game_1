@@ -4,6 +4,7 @@ using System.Collections;
 public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	public Transform myCamera;
 	public WeaponSwordAttack weaponSwordAttack;
+	public LifeManager lifeManager;
 	public float mvtSpeed = 5;
 	public float mvtAccel = 1;
 	public float gravityConst = 0.5f;
@@ -27,6 +28,11 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 		cameraInput = myCamera.GetComponent<CameraInput>();
 		ResetMvtBuildup();
 		SaveStartTransform();
+
+		if (lifeManager == null) {
+			Debug.LogError("lifeManager assignment is required");
+			UnityEditor.EditorApplication.isPlaying = false;
+		}
 	}
 	
 	private float mvtBuildup;
@@ -182,7 +188,7 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	public void ReceiveDamage (int damage) {
 		if (stunTimer > 0) return;
 		currentMode = EnemyWeapon.AttackEffectType.NORMAL;
-		Debug.Log("Received " + damage + " damage!!");
+		lifeManager.SendMessage("DecrementLife", damage);
 		stunTimer = 0.25f;	// Just so that player isn't attacked all the time
 		PlayHurtSound();
 	}
