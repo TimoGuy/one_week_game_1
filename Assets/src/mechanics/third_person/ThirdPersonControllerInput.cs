@@ -212,7 +212,7 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 		SendMessage("DebounceEvents", 0.5f);
 		moveVector = (transform.position - knockbackOrigin).normalized * knockbackForce;
 		moveVector.y += knockbackYShootup;
-		stunTimer = 0.25f;	// Just to get off the ground
+		stunTimer = 0.75f;	// Just to get off the ground
 	}
 
 	public void ReceiveStun (float stunTime) {

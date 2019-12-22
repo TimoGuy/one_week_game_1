@@ -117,7 +117,8 @@ public class PlatformEdgeHandler : MonoBehaviour {
 
 	private void UpdateJump () {
 		if (!IsOnGround() &&
-			prevIsGrounded) {
+			prevIsGrounded ||
+			Input.GetButtonDown("Jump")) {
 			SendMessage("RequestJump");
 		}
 
