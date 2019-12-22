@@ -13,7 +13,6 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		player = GetComponent<ThirdPersonControllerInput>();
 		playerCC = GetComponent<CharacterController>();
 		isOnGround = false;
-		prevIsGrounded = false;
 	}
 	
 	void FixedUpdate () {
@@ -65,7 +64,6 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	}
 
 	private bool isOnGround;
-	private bool prevIsGrounded;
 	private RaycastHit hitInfo;
 	private void FetchIsOnGround () {		// Only call once per frame
 		isOnGround = DoDownwardsIsOnGroundRaycast(out this.hitInfo, 0.5f);
@@ -116,12 +114,9 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	}
 
 	private void UpdateJump () {
-		if (!IsOnGround() &&
-			prevIsGrounded) {
+		if (Input.GetButtonDown("Jump")) {
 			SendMessage("RequestJump");
 		}
-
-		prevIsGrounded = IsOnGround();
 	}
 
 	private void RaycastChecks (
@@ -294,7 +289,6 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		player.transform.position += jojo;
 
 		playerCC.Move(new Vector3(0, player.FetchYVelo(false), 0));		// Force player to ground
-		PreventAccidentalJumping();
 	}
 
 	private void InvokeHanging (Vector3 lookVec) {
@@ -311,15 +305,10 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		playerState = PlayerState.NORMAL;
 		player.enabled = true;
 		player.ResetMvtBuildup();
-		PreventAccidentalJumping();
 	}
 
 	private Vector3 Origin () {
 		return transform.position + new Vector3(0, hangingTopOfPlatformOffset);
-	}
-
-	void PreventAccidentalJumping () {
-		prevIsGrounded = false;		// Prevent accidental jumping
 	}
 
 	float debounceTime = 0;

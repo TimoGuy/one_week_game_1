@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	public Transform myCamera;
 	public WeaponSwordAttack weaponSwordAttack;
+	public LifeManager lifeManager;
 	public float mvtSpeed = 5;
 	public float mvtAccel = 1;
 	public float gravityConst = 0.5f;
@@ -27,6 +29,13 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 		cameraInput = myCamera.GetComponent<CameraInput>();
 		ResetMvtBuildup();
 		SaveStartTransform();
+
+#if UNITY_EDITOR
+		if (lifeManager == null) {
+			Debug.LogError("lifeManager assignment is required");
+			UnityEditor.EditorApplication.isPlaying = false;
+		}
+#endif
 	}
 	
 	private float mvtBuildup;
@@ -131,7 +140,7 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	public float FetchYVelo (bool useIsJumpingFlag=true) {
 		float yVelo = characterController.velocity.y;
 		if (useIsJumpingFlag && _isJumping) {
-			if (yVelo >= 0 && platformEdgeHandler.IsOnGround()) {
+			if (yVelo < 0 && platformEdgeHandler.IsOnGround()) {
 				_isJumping = false;
 			}
 		} else {
@@ -180,11 +189,15 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 
 	// Messages
 	public void ReceiveDamage (int damage) {
-		if (stunTimer > 0) return;
+		if (stunTimer > 0 || currentMode == EnemyWeapon.AttackEffectType.KNOCKBACK) return;
 		currentMode = EnemyWeapon.AttackEffectType.NORMAL;
-		Debug.Log("Received " + damage + " damage!!");
+		lifeManager.SendMessage("DecrementLife", damage);
 		stunTimer = 0.25f;	// Just so that player isn't attacked all the time
 		PlayHurtSound();
+
+		if (lifeManager.GetCurrentLife() <= 0) {
+			SceneManager.LoadScene("scene_player_defeated");
+		}
 	}
 
 	public void ReceiveKnockback (object[] parameters) {
@@ -195,8 +208,6 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 		if (currentMode == EnemyWeapon.AttackEffectType.KNOCKBACK) return;
 		currentMode = EnemyWeapon.AttackEffectType.KNOCKBACK;
 		SendMessage("UndoClimbing");
-		SendMessage("PreventAccidentalJumping");
-		SendMessage("DebounceEvents", 0.5f);
 		moveVector = (transform.position - knockbackOrigin).normalized * knockbackForce;
 		moveVector.y += knockbackYShootup;
 		stunTimer = 0.25f;	// Just to get off the ground
