@@ -140,7 +140,7 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	public float FetchYVelo (bool useIsJumpingFlag=true) {
 		float yVelo = characterController.velocity.y;
 		if (useIsJumpingFlag && _isJumping) {
-			if (yVelo >= 0 && platformEdgeHandler.IsOnGround()) {
+			if (yVelo < 0 && platformEdgeHandler.IsOnGround()) {
 				_isJumping = false;
 			}
 		} else {
