@@ -189,7 +189,7 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 
 	// Messages
 	public void ReceiveDamage (int damage) {
-		if (stunTimer > 0) return;
+		if (stunTimer > 0 || currentMode == EnemyWeapon.AttackEffectType.KNOCKBACK) return;
 		currentMode = EnemyWeapon.AttackEffectType.NORMAL;
 		lifeManager.SendMessage("DecrementLife", damage);
 		stunTimer = 0.25f;	// Just so that player isn't attacked all the time
@@ -208,11 +208,9 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 		if (currentMode == EnemyWeapon.AttackEffectType.KNOCKBACK) return;
 		currentMode = EnemyWeapon.AttackEffectType.KNOCKBACK;
 		SendMessage("UndoClimbing");
-		SendMessage("PreventAccidentalJumping");
-		SendMessage("DebounceEvents", 0.5f);
 		moveVector = (transform.position - knockbackOrigin).normalized * knockbackForce;
 		moveVector.y += knockbackYShootup;
-		stunTimer = 0.75f;	// Just to get off the ground
+		stunTimer = 0.25f;	// Just to get off the ground
 	}
 
 	public void ReceiveStun (float stunTime) {
