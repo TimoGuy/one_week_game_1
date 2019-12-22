@@ -3,14 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class CutsceneManager : MonoBehaviour {
-	// void Start () {
-	// 	GetComponents<Camera>(cameras);
-	// 	Camera myCam = GetComponent<Camera>();
-	// 	cameras.Remove(myCam);
-	// }
+	public int textboxIndex = -1;
 	private GameObject playerToReenable;
 	private Camera[] camsToReenable;
-
 
 	void OnEnable () {
 		camsToReenable = Camera.allCameras;
@@ -34,6 +29,11 @@ public class CutsceneManager : MonoBehaviour {
 	}
 
 	void ShowTextbox () {
+		if (textboxIndex < 0) {
+			Debug.LogError("Textbox id request (" + textboxIndex + ") out of range");
+			return;
+		}
 
+		// TODO: show textbox here!
 	}
 }
