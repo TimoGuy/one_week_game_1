@@ -40,6 +40,7 @@ public class WeaponSwordAttack : MonoBehaviour {
 
 	private void Attack () {
 		weaponSword_animator.SetTrigger("Attack");
+		SendMessageUpwards("TriggerAttackAnim");
 	}
 
 	public bool IsCurrentlyIdling () {

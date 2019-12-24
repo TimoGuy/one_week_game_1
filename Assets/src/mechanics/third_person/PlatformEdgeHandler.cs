@@ -256,6 +256,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		player.UpdateLookDirection(-rchit.normal);
 		mov.y += 0.25f;
 		transform.position += mov;
+		SendMessage("TurnOnClimbing");
 	}
 
 	private void ProcessClimbing () {
@@ -289,6 +290,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		player.transform.position += jojo;
 
 		playerCC.Move(new Vector3(0, player.FetchYVelo(false), 0));		// Force player to ground
+		SendMessage("TurnOffClimbing");
 	}
 
 	private void InvokeHanging (Vector3 lookVec) {
@@ -298,6 +300,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		player.enabled = false;
 		playerCC.enabled = false;
 		InchAndAdjustWhileHanging(lookVec);
+		SendMessage("TurnOffClimbing");
 	}
 
 	void UndoClimbing () {
@@ -305,6 +308,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		playerState = PlayerState.NORMAL;
 		player.enabled = true;
 		player.ResetMvtBuildup();
+		SendMessage("TurnOffClimbing");
 	}
 
 	private Vector3 Origin () {
