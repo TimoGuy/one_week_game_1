@@ -41,7 +41,11 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	private float mvtBuildup;
 	private Vector2 normalizedInputVec;
 	void FixedUpdate () {
-		if (!platformEdgeHandler.IsOnGround()) return;
+		if (!platformEdgeHandler.IsOnGround()) {
+			float realYMovt = -characterController.velocity.y;
+			SendMessage("SetMidairSpeed", realYMovt / 10.0f);
+			return;
+		}
 		float inputX = 0, inputY = 0;
 		if (weaponSwordAttack.IsCurrentlyIdling()) {
 			inputX = Input.GetAxisRaw("Horizontal");
@@ -58,6 +62,7 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 			mvtBuildup -= mvtAccel;
 		}
 		mvtBuildup = Mathf.Clamp(mvtBuildup, 0, mvtSpeed);
+		SendMessage("SetRunningSpeed", mvtBuildup / mvtSpeed);
 	}
 
 	private Vector3 moveVector;
@@ -142,6 +147,7 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 		if (useIsJumpingFlag && _isJumping) {
 			if (yVelo < 0 && platformEdgeHandler.IsOnGround()) {
 				_isJumping = false;
+				SendMessage("TurnOffMidair");
 			}
 		} else {
 			// Prevent flying up ramp
@@ -152,6 +158,10 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 				yVelo,
 				-Mathf.Max(hitInfo.distance / Time.deltaTime, 0)	// Division by time to counter later multiplication by time to force down distance
 			);
+			if (!platformEdgeHandler.IsOnGround() && !_isJumping) {
+				_isJumping = true;
+				SendMessage("TurnOnMidair");
+			}
 		}
 
 		yVelo -= gravityConst * Time.deltaTime;
@@ -159,6 +169,7 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 			yVelo = jumpHeight;
 			_isJumping = true;
 			_reqJump = false;
+			SendMessage("TurnOnMidair");
 		}
 
 		return yVelo;
