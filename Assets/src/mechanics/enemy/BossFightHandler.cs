@@ -49,7 +49,7 @@ public class BossFightHandler : MonoBehaviour {
 		animator.SetTrigger("CircleBroken");
 	}
 
-	void SetLifeInAnimator (int life) {
+	public void SetLifeInAnimator (int life) {
 		animator.SetInteger("Life", life);
 		if (life <= phase2StartLife) {
 			animator.SetBool("Phase2", true);
