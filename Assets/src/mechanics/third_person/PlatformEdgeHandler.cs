@@ -39,7 +39,8 @@ public class PlatformEdgeHandler : MonoBehaviour {
 			float inputX = Input.GetAxisRaw("Horizontal");
 			float inputY = Input.GetAxisRaw("Vertical");
 			if (playerState == PlayerState.HANGING_ON_EDGE) {
-				if (inputX != 0 || inputY != 0 || overrideEh) {
+				if (hangingDebounce <= 0 &&
+					(inputX != 0 || inputY != 0 || overrideEh)) {
 					Debug.Log("Undo!");
 					playerState = PlayerState.NORMAL;
 					player.enabled = true;
@@ -47,6 +48,8 @@ public class PlatformEdgeHandler : MonoBehaviour {
 					playerCC.enabled = true;
 
 					ClimbOutOfLedge(new Vector3(0, 1.75f, 0.75f));
+				} else {
+					hangingDebounce -= Time.deltaTime;
 				}
 			} else if (playerState == PlayerState.CLIMBING_FREE) {
 				if (inputX != 0 || inputY != 0) {
@@ -302,10 +305,12 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		SendMessage("TurnOffClimbing");
 	}
 
+	private float hangingDebounce = 0.35f;
 	private void InvokeHanging (Vector3 lookVec) {
 		// Grab that ledge!!!
 		Debug.Log("Hey hey spiderman");
 		playerState = PlayerState.HANGING_ON_EDGE;
+		hangingDebounce = 0.35f;
 		player.enabled = false;
 		playerCC.enabled = false;
 		InchAndAdjustWhileHanging(lookVec);
