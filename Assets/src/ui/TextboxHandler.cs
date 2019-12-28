@@ -9,6 +9,8 @@ public class TextboxHandler : MonoBehaviour {
 
 	public TextMesh textMesh;
 	public GameObject txtbxBgPlane;
+
+	private ThirdPersonControllerInput player;
 	
 	void Start () {
 #if UNITY_EDITOR
@@ -21,15 +23,22 @@ public class TextboxHandler : MonoBehaviour {
 			UnityEditor.EditorApplication.isPlaying = false;
 		}
 #endif
+		player =
+			GameObject.FindGameObjectWithTag("Player")
+			.GetComponent<ThirdPersonControllerInput>();
 	}
 
 	void OnEnable () {
+		LoadPlayerObj();
+		player.enabled = false;
 		textMesh.gameObject.SetActive(true);
 		txtbxBgPlane.SetActive(true);
 		textMsgInd = 0;
 	}
 
 	void OnDisable () {
+		LoadPlayerObj();
+		player.enabled = true;
 		textMesh.gameObject.SetActive(false);
 		txtbxBgPlane.SetActive(false);
 	}
@@ -54,5 +63,13 @@ public class TextboxHandler : MonoBehaviour {
 		this.textMessages = messages;
 		this.enabled = true;
 		debounce = DEBOUNCE_AMT;
+	}
+
+	private void LoadPlayerObj (bool overrideFlag=false) {
+		if (player == null || overrideFlag) {
+			player =
+				GameObject.FindGameObjectWithTag("Player")
+				.GetComponent<ThirdPersonControllerInput>();
+		}
 	}
 }
