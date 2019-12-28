@@ -8,7 +8,7 @@ public class NPCActionHandler : MonoBehaviour {
 		if (npcInContact != null &&
 			Input.GetButtonDown("Action")) {
 			npcInContact.SendMessage("NPC_Action", SendMessageOptions.RequireReceiver);
-			// npcInContact = null;	// Require enter into trigger again
+			npcInContact = null;	// Require enter into trigger again
 		}
 	}
 
