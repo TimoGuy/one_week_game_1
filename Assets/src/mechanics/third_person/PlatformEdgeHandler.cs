@@ -240,28 +240,6 @@ public class PlatformEdgeHandler : MonoBehaviour {
 			player.enabled = false;
 			// playerCC.enabled = false;
 			SetupClimbing(raycastHit, lookVec);
-		} else if (IsOnGround()) {
-			float aboveHeadLevelHeight = 2.5f;
-			RaycastHit hitInfo;
-			bool hitAbove = DoRaycast(
-				Color.red,
-				transform.position + Vector3.up,
-				Vector3.up,
-				out hitInfo,
-				aboveHeadLevelHeight,
-				1 << LayerMask.NameToLayer("Ground")
-			);
-			bool hitAboveHeadLevel = DoRaycast(
-				Color.red,
-				transform.position + Vector3.up + new Vector3(0, aboveHeadLevelHeight),
-				lookVec,
-				out hitInfo,
-				1.0f,
-				1 << LayerMask.NameToLayer("Ground")
-			);
-			if (!hitAbove && !hitAboveHeadLevel) {
-				InvokeHanging(raycastHit, lookVec);
-			}
 		}
 	}
 	
