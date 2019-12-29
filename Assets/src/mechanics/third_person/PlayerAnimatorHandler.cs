@@ -40,4 +40,12 @@ public class PlayerAnimatorHandler : MonoBehaviour {
 	void SetMidairSpeed (float midair) {
 		playerAnimator.SetFloat("Blend_Midair", midair);
 	}
+
+	void TriggerHangAnim () {
+		playerAnimator.SetTrigger("Hang Anim");
+	}
+
+	void TriggerGetUpAnim () {
+		playerAnimator.SetTrigger("Get Up Anim");
+	}
 }

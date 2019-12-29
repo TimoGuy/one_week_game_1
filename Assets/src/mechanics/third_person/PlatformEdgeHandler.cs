@@ -160,7 +160,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		RaycastChecks(lookVec, out rchit, out hitEdge, out hitHead);
 
 		if (hitEdge && !hitHead) {	// Hit middle body to wall but miss upper body to wall
-			InvokeHanging(lookVec);
+			InvokeHanging(rchit, lookVec);
 		} else if (hitEdge && hitHead) {	// Investigate to see if it's climbable
 			CheckIfClimbableWall(rchit, lookVec);
 		}
@@ -254,7 +254,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 				1 << LayerMask.NameToLayer("Ground")
 			);
 			if (!hitAbove && !hitAboveHeadLevel) {
-				InvokeHanging(lookVec);
+				InvokeHanging(raycastHit, lookVec);
 			}
 		}
 	}
@@ -285,7 +285,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		if (!hitEdge) {
 			UndoClimbing();
 		} else if (hitEdge && !hitHead) {
-			InvokeHanging(lookVec);
+			InvokeHanging(rchit, lookVec);
 		} else if (hitEdge && hitHead) {
 			// Update look direction
 			player.UpdateLookDirection(-rchit.normal);
@@ -301,18 +301,21 @@ public class PlatformEdgeHandler : MonoBehaviour {
 
 		playerCC.Move(new Vector3(0, player.FetchYVelo(false), 0));		// Force player to ground
 		SendMessage("TurnOffClimbing");
+		SendMessage("TriggerGetUpAnim");
 	}
 
 	private float hangingDebounce = 0.35f;
-	private void InvokeHanging (Vector3 lookVec) {
+	private void InvokeHanging (RaycastHit rchit, Vector3 lookVec) {
 		// Grab that ledge!!!
 		Debug.Log("Hey hey spiderman");
 		playerState = PlayerState.HANGING_ON_EDGE;
 		hangingDebounce = 0.35f;
 		player.enabled = false;
 		playerCC.enabled = false;
+		player.UpdateLookDirection(-rchit.normal);
 		InchAndAdjustWhileHanging(lookVec);
 		SendMessage("TurnOffClimbing");
+		SendMessage("TriggerHangAnim");
 	}
 
 	void UndoClimbing () {
