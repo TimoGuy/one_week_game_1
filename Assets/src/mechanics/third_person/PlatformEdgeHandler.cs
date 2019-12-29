@@ -300,7 +300,6 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		player.transform.position += jojo;
 
 		playerCC.Move(new Vector3(0, player.FetchYVelo(false), 0));		// Force player to ground
-		SendMessage("TurnOffClimbing");
 		SendMessage("TriggerGetUpAnim");
 	}
 
