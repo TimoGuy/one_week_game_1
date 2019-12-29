@@ -123,7 +123,8 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	}
 
 	private void UpdateJump () {
-		if (Input.GetButtonDown("Jump")) {
+		if (Input.GetButtonDown("Jump") &&
+			IsOnGround()) {
 			SendMessage("RequestJump");
 		}
 	}
@@ -291,6 +292,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 
 		playerCC.Move(new Vector3(0, player.FetchYVelo(false), 0));		// Force player to ground
 		SendMessage("TurnOffClimbing");
+		SendMessage("TurnOffMidair");
 	}
 
 	private float hangingDebounce = 0.15f;
