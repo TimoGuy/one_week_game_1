@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class PlatformEdgeHandler : MonoBehaviour {
-	public enum PlayerState { NORMAL, HANGING_ON_EDGE, CLIMBING_FREE };
+	public enum PlayerState { NORMAL, HANGING_ON_EDGE, CLIMBING_FREE, WAIT_ON_GET_UP_ANIM };
 	public PlayerState playerState = PlayerState.NORMAL;
 	private ThirdPersonControllerInput player;
 	private CharacterController playerCC;
@@ -41,6 +41,12 @@ public class PlatformEdgeHandler : MonoBehaviour {
 			if (playerState == PlayerState.HANGING_ON_EDGE) {
 				if (hangingDebounce <= 0 &&
 					(inputX != 0 || inputY != 0 || overrideEh)) {
+					StartClimbOutOfLedge();
+				} else {
+					hangingDebounce -= Time.deltaTime;
+				}
+			} else if (playerState == PlayerState.WAIT_ON_GET_UP_ANIM) {
+				if (hangingDebounce <= 0) {
 					Debug.Log("Undo!");
 					playerState = PlayerState.NORMAL;
 					player.enabled = true;
@@ -292,6 +298,12 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		}
 	}
 
+	private void StartClimbOutOfLedge () {
+		SendMessage("TriggerGetUpAnim");
+		playerState = PlayerState.WAIT_ON_GET_UP_ANIM;
+		hangingDebounce = 0.4166666666667f;
+	}
+
 	private void ClimbOutOfLedge (Vector3 climbMvt) {
 		var lookVec = player.GetLookDirection();
 		lookVec.y = 0;
@@ -300,15 +312,15 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		player.transform.position += jojo;
 
 		playerCC.Move(new Vector3(0, player.FetchYVelo(false), 0));		// Force player to ground
-		SendMessage("TriggerGetUpAnim");
+		SendMessage("TurnOffClimbing");
 	}
 
-	private float hangingDebounce = 0.35f;
+	private float hangingDebounce = 0.15f;
 	private void InvokeHanging (RaycastHit rchit, Vector3 lookVec) {
 		// Grab that ledge!!!
 		Debug.Log("Hey hey spiderman");
 		playerState = PlayerState.HANGING_ON_EDGE;
-		hangingDebounce = 0.35f;
+		hangingDebounce = 0.15f;
 		player.enabled = false;
 		playerCC.enabled = false;
 		player.UpdateLookDirection(-rchit.normal);
