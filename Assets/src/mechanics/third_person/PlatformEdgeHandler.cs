@@ -58,6 +58,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 					hangingDebounce -= Time.deltaTime;
 				}
 			} else if (playerState == PlayerState.CLIMBING_FREE) {
+				SendMessage("SetClimbBlendCoords", new object[] { inputX, inputY });
 				if (inputX != 0 || inputY != 0) {
 					Vector3 movement = Quaternion.LookRotation(player.GetLookDirection()) * new Vector3(inputX, inputY, 1).normalized * 5 * Time.deltaTime;
 					Debug.Log("HAHAHAH\n" + player.GetLookDirection());
