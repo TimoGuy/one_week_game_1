@@ -7,7 +7,11 @@ public class GotoScript : MonoBehaviour {
 
 	void OnTriggerEnter (Collider other) {
 		if (other.gameObject.tag == collideWithTag) {
-			SceneManager.LoadScene(gotoScene);
+			GotoScene(gotoScene);
 		}
+	}
+
+	void GotoScene (string sceneName) {
+		SceneManager.LoadScene(sceneName);
 	}
 }
