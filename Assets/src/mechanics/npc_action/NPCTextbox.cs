@@ -3,6 +3,8 @@ using System.Collections;
 
 public class NPCTextbox : MonoBehaviour {
 	public TextboxHandler textboxHandler;
+	
+	[TextArea(3,10)]
 	public string[] textMessages;
 
 	void NPC_Action () {
