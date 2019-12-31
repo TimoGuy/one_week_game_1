@@ -23,14 +23,14 @@ public class TextboxHandler : MonoBehaviour {
 			UnityEditor.EditorApplication.isPlaying = false;
 		}
 #endif
-		player =
-			GameObject.FindGameObjectWithTag("Player")
-			.GetComponent<ThirdPersonControllerInput>();
+		LoadPlayerObj(true);
 	}
 
 	void OnEnable () {
 		LoadPlayerObj();
-		player.enabled = false;
+		if (player != null) {
+			player.enabled = false;
+		}
 		textMesh.gameObject.SetActive(true);
 		txtbxBgPlane.SetActive(true);
 		textMsgInd = 0;
@@ -38,7 +38,9 @@ public class TextboxHandler : MonoBehaviour {
 
 	void OnDisable () {
 		LoadPlayerObj();
-		player.enabled = true;
+		if (player != null) {
+			player.enabled = true;
+		}
 		textMesh.gameObject.SetActive(false);
 		txtbxBgPlane.SetActive(false);
 	}
@@ -67,9 +69,10 @@ public class TextboxHandler : MonoBehaviour {
 
 	private void LoadPlayerObj (bool overrideFlag=false) {
 		if (player == null || overrideFlag) {
-			player =
-				GameObject.FindGameObjectWithTag("Player")
-				.GetComponent<ThirdPersonControllerInput>();
+			var gameObjTemp = GameObject.FindGameObjectWithTag("Player");
+			if (gameObjTemp != null) {
+				player = gameObjTemp.GetComponent<ThirdPersonControllerInput>();
+			}
 		}
 	}
 }
