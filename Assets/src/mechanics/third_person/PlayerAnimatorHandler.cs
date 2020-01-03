@@ -40,4 +40,19 @@ public class PlayerAnimatorHandler : MonoBehaviour {
 	void SetMidairSpeed (float midair) {
 		playerAnimator.SetFloat("Blend_Midair", midair);
 	}
+
+	void TriggerHangAnim () {
+		playerAnimator.SetTrigger("Hang Anim");
+	}
+
+	void TriggerGetUpAnim () {
+		playerAnimator.SetTrigger("Get Up Anim");
+	}
+
+	void SetClimbBlendCoords (object[] coords) {
+		float x = Mathf.Abs((float)coords[0]);
+		float y = Mathf.Abs((float)coords[1]);
+		playerAnimator.SetFloat("Blend_Climb_X", x);
+		playerAnimator.SetFloat("Blend_Climb_Y", y);
+	}
 }

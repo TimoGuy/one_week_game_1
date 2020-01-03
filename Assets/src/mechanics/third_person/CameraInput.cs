@@ -74,7 +74,7 @@ public class CameraInput : MonoBehaviour {
 			direction,
 			out rHit,
 			maxDistance,
-			1 << LayerMask.NameToLayer("Ground"));
+			(1 << LayerMask.NameToLayer("Ground")) | (1 << LayerMask.NameToLayer("Camera Wall")));
 		if (hit) {
 			return rHit.distance - distanceBuffer;
 		}

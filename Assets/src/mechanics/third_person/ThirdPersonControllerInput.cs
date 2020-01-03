@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	public Transform myCamera;
 	public WeaponSwordAttack weaponSwordAttack;
+	public GameObject dyingCutsceneObj;
 	public LifeManager lifeManager;
 	public float mvtSpeed = 5;
 	public float mvtAccel = 1;
@@ -31,6 +32,10 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 		SaveStartTransform();
 
 #if UNITY_EDITOR
+		if (dyingCutsceneObj == null) {
+			Debug.LogError("dyingCutsceneObj assignment is required");
+			UnityEditor.EditorApplication.isPlaying = false;
+		}
 		if (lifeManager == null) {
 			Debug.LogError("lifeManager assignment is required");
 			UnityEditor.EditorApplication.isPlaying = false;
@@ -207,7 +212,13 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 		PlayHurtSound();
 
 		if (lifeManager.GetCurrentLife() <= 0) {
-			SceneManager.LoadScene("scene_player_defeated");
+			// Trigger animation that handles dying
+			GameObject.Instantiate(
+				dyingCutsceneObj,
+				transform.position,
+				Quaternion.LookRotation(GetLookDirection())
+			);
+			gameObject.SetActive(false);
 		}
 	}
 

@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class BossFightDamageHandle : MonoBehaviour {
+	public BossFightHandler bossFightHandler;
 	public LifeManager lifeManager;
 	private float stunTimer;
 
@@ -11,9 +12,13 @@ public class BossFightDamageHandle : MonoBehaviour {
 			Debug.LogError("lifeManager assignment is required");
 			UnityEditor.EditorApplication.isPlaying = false;
 		}
+		if (bossFightHandler == null) {
+			Debug.LogError("bossFightHandler assignment is required");
+			UnityEditor.EditorApplication.isPlaying = false;
+		}
 #endif
 
-		SendMessageUpwards("SetLifeInAnimator", lifeManager.GetCurrentLife());
+		bossFightHandler.SetLifeInAnimator(lifeManager.GetCurrentLife());
 	}
 
 	void Update () {
@@ -28,6 +33,6 @@ public class BossFightDamageHandle : MonoBehaviour {
 		if (stunTimer > 0) return;
 		stunTimer += 0.25f;
 		lifeManager.SendMessage("DecrementLife", damage);
-		SendMessageUpwards("SetLifeInAnimator", lifeManager.GetCurrentLife());
+		bossFightHandler.SetLifeInAnimator(lifeManager.GetCurrentLife());
 	}
 }

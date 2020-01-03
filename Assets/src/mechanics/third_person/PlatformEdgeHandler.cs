@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class PlatformEdgeHandler : MonoBehaviour {
-	public enum PlayerState { NORMAL, HANGING_ON_EDGE, CLIMBING_FREE };
+	public enum PlayerState { NORMAL, HANGING_ON_EDGE, CLIMBING_FREE, WAIT_ON_GET_UP_ANIM };
 	public PlayerState playerState = PlayerState.NORMAL;
 	private ThirdPersonControllerInput player;
 	private CharacterController playerCC;
@@ -39,7 +39,14 @@ public class PlatformEdgeHandler : MonoBehaviour {
 			float inputX = Input.GetAxisRaw("Horizontal");
 			float inputY = Input.GetAxisRaw("Vertical");
 			if (playerState == PlayerState.HANGING_ON_EDGE) {
-				if (inputX != 0 || inputY != 0 || overrideEh) {
+				if (hangingDebounce <= 0 &&
+					(inputX != 0 || inputY != 0 || overrideEh)) {
+					StartClimbOutOfLedge();
+				} else {
+					hangingDebounce -= Time.deltaTime;
+				}
+			} else if (playerState == PlayerState.WAIT_ON_GET_UP_ANIM) {
+				if (hangingDebounce <= 0) {
 					Debug.Log("Undo!");
 					playerState = PlayerState.NORMAL;
 					player.enabled = true;
@@ -47,8 +54,11 @@ public class PlatformEdgeHandler : MonoBehaviour {
 					playerCC.enabled = true;
 
 					ClimbOutOfLedge(new Vector3(0, 1.75f, 0.75f));
+				} else {
+					hangingDebounce -= Time.deltaTime;
 				}
 			} else if (playerState == PlayerState.CLIMBING_FREE) {
+				SendMessage("SetClimbBlendCoords", new object[] { inputX, inputY });
 				if (inputX != 0 || inputY != 0) {
 					Vector3 movement = Quaternion.LookRotation(player.GetLookDirection()) * new Vector3(inputX, inputY, 1).normalized * 5 * Time.deltaTime;
 					Debug.Log("HAHAHAH\n" + player.GetLookDirection());
@@ -114,7 +124,8 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	}
 
 	private void UpdateJump () {
-		if (Input.GetButtonDown("Jump")) {
+		if (Input.GetButtonDown("Jump") &&
+			IsOnGround()) {
 			SendMessage("RequestJump");
 		}
 	}
@@ -157,7 +168,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		RaycastChecks(lookVec, out rchit, out hitEdge, out hitHead);
 
 		if (hitEdge && !hitHead) {	// Hit middle body to wall but miss upper body to wall
-			InvokeHanging(lookVec);
+			InvokeHanging(rchit, lookVec);
 		} else if (hitEdge && hitHead) {	// Investigate to see if it's climbable
 			CheckIfClimbableWall(rchit, lookVec);
 		}
@@ -172,8 +183,6 @@ public class PlatformEdgeHandler : MonoBehaviour {
 
 		if (hitEdge && hitHead) {	// Investigate to see if it's climbable
 			CheckIfClimbableWall(rchit, lookVec);
-		} else if (hitEdge && !hitHead) {	// Climb over the small wall!
-			ClimbOutOfLedge(new Vector3(0, 1.75f, 1.25f));
 		}
 	}
 
@@ -233,19 +242,6 @@ public class PlatformEdgeHandler : MonoBehaviour {
 			player.enabled = false;
 			// playerCC.enabled = false;
 			SetupClimbing(raycastHit, lookVec);
-		} else if (IsOnGround()) {
-			RaycastHit hitInfo;
-			bool hitAbove = DoRaycast(
-				Color.red,
-				transform.position + Vector3.up,
-				Vector3.up,
-				out hitInfo,
-				1.0f,
-				1 << LayerMask.NameToLayer("Ground")
-			);
-			if (!hitAbove) {
-				InvokeHanging(lookVec);
-			}
 		}
 	}
 	
@@ -275,11 +271,17 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		if (!hitEdge) {
 			UndoClimbing();
 		} else if (hitEdge && !hitHead) {
-			InvokeHanging(lookVec);
+			InvokeHanging(rchit, lookVec);
 		} else if (hitEdge && hitHead) {
 			// Update look direction
 			player.UpdateLookDirection(-rchit.normal);
 		}
+	}
+
+	private void StartClimbOutOfLedge () {
+		SendMessage("TriggerGetUpAnim");
+		playerState = PlayerState.WAIT_ON_GET_UP_ANIM;
+		hangingDebounce = 0.4166666666667f;
 	}
 
 	private void ClimbOutOfLedge (Vector3 climbMvt) {
@@ -291,16 +293,21 @@ public class PlatformEdgeHandler : MonoBehaviour {
 
 		playerCC.Move(new Vector3(0, player.FetchYVelo(false), 0));		// Force player to ground
 		SendMessage("TurnOffClimbing");
+		SendMessage("TurnOffMidair");
 	}
 
-	private void InvokeHanging (Vector3 lookVec) {
+	private float hangingDebounce = 0.15f;
+	private void InvokeHanging (RaycastHit rchit, Vector3 lookVec) {
 		// Grab that ledge!!!
 		Debug.Log("Hey hey spiderman");
 		playerState = PlayerState.HANGING_ON_EDGE;
+		hangingDebounce = 0.15f;
 		player.enabled = false;
 		playerCC.enabled = false;
+		player.UpdateLookDirection(-rchit.normal);
 		InchAndAdjustWhileHanging(lookVec);
 		SendMessage("TurnOffClimbing");
+		SendMessage("TriggerHangAnim");
 	}
 
 	void UndoClimbing () {
