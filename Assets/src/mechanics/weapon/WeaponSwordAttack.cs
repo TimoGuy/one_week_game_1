@@ -16,7 +16,6 @@ public class WeaponSwordAttack : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (CheckWantToAttack()) {
-			UpdateAttackVariant();
 			Attack();
 		}
 
@@ -27,15 +26,6 @@ public class WeaponSwordAttack : MonoBehaviour {
 
 	private bool CheckWantToAttack () {
 		return Input.GetButtonDown("Fire1");
-	}
-
-	private void UpdateAttackVariant () {
-		if (Input.GetAxisRaw("Horizontal") != 0 ||
-			Input.GetAxisRaw("Vertical") != 0) {
-			weaponSword_animator.SetBool("IsVerticalSlash", true);
-		} else {
-			weaponSword_animator.SetBool("IsVerticalSlash", false);
-		}
 	}
 
 	private void Attack () {
@@ -54,11 +44,5 @@ public class WeaponSwordAttack : MonoBehaviour {
 		if (lookVec != Vector3.zero)
 			transform.rotation =
 				Quaternion.LookRotation(lookVec);
-
-	}
-
-	public bool IsVerticalSlash () {
-		// Warning: only is reliable if player is currently animating a slash
-		return weaponSword_animator.GetBool("IsVerticalSlash");
 	}
 }

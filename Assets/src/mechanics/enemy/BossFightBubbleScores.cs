@@ -18,12 +18,9 @@ public class BossFightBubbleScores : MonoBehaviour {
 
 	void OnTriggerEnter (Collider other) {
 		if (other.gameObject.tag == "Player Weapon") {
-			bool isVert = other.GetComponentInParent<WeaponSwordAttack>().IsVerticalSlash();
-			if (isVert == amIVertical) {
-				myCollider.enabled = meshRenderer.enabled = false;
-				numTimesStomped = 0;
-				SendMessageUpwards("BreakCircle", SendMessageOptions.RequireReceiver);
-			}
+			myCollider.enabled = meshRenderer.enabled = false;
+			numTimesStomped = 0;
+			SendMessageUpwards("BreakCircle", SendMessageOptions.RequireReceiver);
 		}
 	}
 
@@ -33,17 +30,6 @@ public class BossFightBubbleScores : MonoBehaviour {
 			!meshRenderer.enabled) {
 			// Show cracks
 			myCollider.enabled = meshRenderer.enabled = true;
-			RandomHorOrVert();
-		}
-	}
-
-	private void RandomHorOrVert () {
-		amIVertical = Random.value > 0.5f;
-		Debug.Log("Haha Iam vert: " + amIVertical);
-		if (amIVertical) {
-			transform.rotation = Quaternion.Euler(90, 0, 0);
-		} else {
-			transform.rotation = Quaternion.Euler(Vector3.zero);
 		}
 	}
 }
