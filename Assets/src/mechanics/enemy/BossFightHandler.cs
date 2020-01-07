@@ -30,6 +30,11 @@ public class BossFightHandler : MonoBehaviour {
 		if (!animator.GetBool("Override_DoLazerBeam")) {
 			animator.SetBool("DoLazerBeam", Random.value > 0.5f);
 		}
+
+		SendMessage(
+			"Spider_DoLazer",
+			animator.GetBool("DoLazerBeam")
+		);
 	}
 
 	void SetupLazerStartDir () {
