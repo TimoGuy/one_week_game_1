@@ -46,28 +46,30 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	private float mvtBuildup;
 	private Vector2 normalizedInputVec;
 	void FixedUpdate () {
-		if (!platformEdgeHandler.IsOnGround()) {
-			float realYMovt = -characterController.velocity.y;
-			SendMessage("SetMidairSpeed", realYMovt / 10.0f);
-			return;
+		if (currentMode == EnemyWeapon.AttackEffectType.NORMAL) {
+			if (!platformEdgeHandler.IsOnGround()) {
+				float realYMovt = -characterController.velocity.y;
+				SendMessage("SetMidairSpeed", realYMovt / 10.0f);
+				return;
+			}
+			float inputX = 0, inputY = 0;
+			if (weaponSwordAttack.IsCurrentlyIdling()) {
+				inputX = Input.GetAxisRaw("Horizontal");
+				inputY = Input.GetAxisRaw("Vertical");
+			}
+			
+			if (inputX != 0 || inputY != 0) {
+				mvtBuildup += mvtAccel;
+				normalizedInputVec = new Vector2(inputX, inputY).normalized;
+				UpdateLookDirection(
+					CalcCameraLookDir(normalizedInputVec)
+				);
+			} else {
+				mvtBuildup -= mvtAccel;
+			}
+			mvtBuildup = Mathf.Clamp(mvtBuildup, 0, mvtSpeed);
+			SendMessage("SetRunningSpeed", mvtBuildup / mvtSpeed);
 		}
-		float inputX = 0, inputY = 0;
-		if (weaponSwordAttack.IsCurrentlyIdling()) {
-			inputX = Input.GetAxisRaw("Horizontal");
-			inputY = Input.GetAxisRaw("Vertical");
-		}
-		
-		if (inputX != 0 || inputY != 0) {
-			mvtBuildup += mvtAccel;
-			normalizedInputVec = new Vector2(inputX, inputY).normalized;
-			UpdateLookDirection(
-				CalcCameraLookDir(normalizedInputVec)
-			);
-		} else {
-			mvtBuildup -= mvtAccel;
-		}
-		mvtBuildup = Mathf.Clamp(mvtBuildup, 0, mvtSpeed);
-		SendMessage("SetRunningSpeed", mvtBuildup / mvtSpeed);
 	}
 
 	private Vector3 moveVector;
@@ -96,10 +98,12 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 			moveVector.y -= gravityConst * Time.deltaTime;
 			if (platformEdgeHandler.IsOnGround() && stunTimer <= 0) {
 				currentMode = EnemyWeapon.AttackEffectType.NORMAL;
+				SendMessage("SetIsHurtAnim", false);
 			}
 		} else if (currentMode == EnemyWeapon.AttackEffectType.STUN) {
 			if (stunTimer <= 0) {
 				currentMode = EnemyWeapon.AttackEffectType.NORMAL;
+				SendMessage("SetIsHurtAnim", false);
 			}
 		}		
 	}
@@ -233,12 +237,14 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 		moveVector = (transform.position - knockbackOrigin).normalized * knockbackForce;
 		moveVector.y += knockbackYShootup;
 		stunTimer = 0.25f;	// Just to get off the ground
+		SendMessage("SetIsHurtAnim", true);
 	}
 
 	public void ReceiveStun (float stunTime) {
 		if (currentMode == EnemyWeapon.AttackEffectType.STUN) return;
 		currentMode = EnemyWeapon.AttackEffectType.STUN;
 		stunTimer = stunTime;
+		SendMessage("SetIsHurtAnim", true);
 	}
 
 	private void PlayHurtSound () {

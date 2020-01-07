@@ -55,4 +55,8 @@ public class PlayerAnimatorHandler : MonoBehaviour {
 		playerAnimator.SetFloat("Blend_Climb_X", x);
 		playerAnimator.SetFloat("Blend_Climb_Y", y);
 	}
+
+	void SetIsHurtAnim (bool flag) {
+		playerAnimator.SetBool("IsHurt", flag);
+	}
 }
