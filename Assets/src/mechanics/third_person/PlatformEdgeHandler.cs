@@ -6,7 +6,6 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	public PlayerState playerState = PlayerState.NORMAL;
 	private ThirdPersonControllerInput player;
 	private CharacterController playerCC;
-	public CameraInput cameraInput;
 
 	// Use this for initialization
 	void Start () {
@@ -61,13 +60,8 @@ public class PlatformEdgeHandler : MonoBehaviour {
 				SendMessage("SetClimbBlendCoords", new object[] { inputX, inputY });
 				if (inputX != 0 || inputY != 0) {
 					Vector3 movement = Quaternion.LookRotation(player.GetLookDirection()) * new Vector3(inputX, inputY, 1).normalized * 5 * Time.deltaTime;
-					Debug.Log("HAHAHAH\n" + player.GetLookDirection());
 					playerCC.Move(movement);
 					ProcessClimbing();
-
-					var lookDir = player.GetLookDirection();
-					cameraInput.mouseX = Mathf.Atan2(lookDir.x, lookDir.z) * Mathf.Rad2Deg;
-					cameraInput.mouseY = 0;
 				}
 			}
 		}
