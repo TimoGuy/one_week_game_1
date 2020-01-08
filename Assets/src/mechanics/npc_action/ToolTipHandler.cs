@@ -16,7 +16,8 @@ public class ToolTipHandler : MonoBehaviour {
 
 	private float debounce = 0;
 	void Update () {
-		if (debounce <= 0) {
+		if (debounce <= 0 ||
+			Input.anyKeyDown) {
 			toolTipText.gameObject.SetActive(false);
 			this.enabled = false;
 			return;
