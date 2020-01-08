@@ -7,6 +7,7 @@ public class CutsceneGoodbyeHelper : MonoBehaviour {
 	public GameObject myContainer;
 	public Animator npcFriendAnimator;
 	public TextboxHandler handlerToWatch;
+	public GSFirstArea gameStateManager;
 	private Animator myAnimator;
 
 	void Start () {
@@ -33,6 +34,11 @@ public class CutsceneGoodbyeHelper : MonoBehaviour {
 		}
 		if (handlerToWatch == null) {
 			Debug.LogError("handlerToWatch must not be null");
+			UnityEditor.EditorApplication.isPlaying = false;
+			return;
+		}
+		if (gameStateManager == null) {
+			Debug.LogError("gameStateManager must not be null");
 			UnityEditor.EditorApplication.isPlaying = false;
 			return;
 		}
@@ -73,5 +79,9 @@ public class CutsceneGoodbyeHelper : MonoBehaviour {
 
 	public void ShutDownCutscene () {
 		GameObject.Destroy(myContainer);
+	}
+
+	public void MoveToGameState (int index) {
+		gameStateManager.gameStateIndex = index;
 	}
 }
