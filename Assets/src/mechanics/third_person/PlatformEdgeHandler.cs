@@ -7,7 +7,11 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	private ThirdPersonControllerInput player;
 	private CharacterController playerCC;
 
-	// Use this for initialization
+	// Use this for respawning
+	private Vector3 respawnPosition;
+	private float respawnMidairTime = 2;
+	private float currentMidairTime = 0;
+
 	void Start () {
 		player = GetComponent<ThirdPersonControllerInput>();
 		playerCC = GetComponent<CharacterController>();
@@ -27,7 +31,9 @@ public class PlatformEdgeHandler : MonoBehaviour {
 
 				if (!IsOnGround()) {
 					UpdateGrabEdgeWhileMidair();
+					IncrementMidairTime(Time.deltaTime);
 				} else {
+					SetRespawnPoint(transform.position);
 					bool approaching = playerCC.velocity.x != 0 || playerCC.velocity.z != 0;
 					if (approaching) {
 						UpdateClimbWallWhileMoving();
@@ -329,5 +335,20 @@ public class PlatformEdgeHandler : MonoBehaviour {
 			return true;
 		}
 		return false;
+	}
+
+	private void SetRespawnPoint (Vector3 pos) {
+		respawnPosition = pos;
+		currentMidairTime = 0;
+	}
+
+	private void IncrementMidairTime (float time) {
+		currentMidairTime += time;
+		if (currentMidairTime >= respawnMidairTime) {
+			BottomlessPitHandler.SetEnabledCameraInput(true);
+			transform.position = respawnPosition;
+			SetRespawnPoint(transform.position);
+			player.ResetMvtBuildup();
+		}
 	}
 }
