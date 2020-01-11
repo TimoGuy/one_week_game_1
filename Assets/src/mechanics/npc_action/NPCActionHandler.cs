@@ -19,7 +19,7 @@ public class NPCActionHandler : MonoBehaviour {
 		if (npcInContact != null &&
 			Input.GetButtonDown("Action")) {
 			npcInContact.SendMessage("NPC_Action", SendMessageOptions.RequireReceiver);
-			npcInContact = null;	// Require enter into trigger again
+			RemoveNPCRef();	// Require enter into trigger again
 		}
 	}
 
@@ -30,5 +30,16 @@ public class NPCActionHandler : MonoBehaviour {
 				other.gameObject.GetComponent<ToolTip>().GetText()
 			);
 		}
+	}
+
+	void OnTriggerExit (Collider other) {
+		if (ReferenceEquals(other.gameObject, npcInContact)) {
+			RemoveNPCRef();
+		}
+	}
+
+	private void RemoveNPCRef () {
+		tooltipHandler.DisplayToolTip(string.Empty);
+		npcInContact = null;
 	}
 }
