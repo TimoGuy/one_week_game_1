@@ -7,6 +7,7 @@ public class CutsceneFallDownShrineHelper : MonoBehaviour {
 	public Animator myCharPuppetAnimator;
 	public Animator gateAnimator;
 	public GameObject waterGameObject;
+	public TextboxHandler handlerToWatch;
 	private Animator myAnimator;
 
 	void Start () {
@@ -31,13 +32,22 @@ public class CutsceneFallDownShrineHelper : MonoBehaviour {
 			UnityEditor.EditorApplication.isPlaying = false;
 			return;
 		}
+		if (handlerToWatch == null) {
+			Debug.LogError("handlerToWatch must not be null");
+			UnityEditor.EditorApplication.isPlaying = false;
+			return;
+		}
 #endif
 		myAnimator = GetComponent<Animator>();
 	}
 	
-	// Update is called once per frame
-	void Update () {
-	
+	private bool watchForTxtbxEnd = false;
+	void FixedUpdate () {
+		if (!watchForTxtbxEnd) return;
+
+		if (!handlerToWatch.enabled) {
+			GotoBossFightScene();
+		}
 	}
 
 	void OnEnable () {
@@ -62,5 +72,9 @@ public class CutsceneFallDownShrineHelper : MonoBehaviour {
 
 	public void DisableWaterGameObject () {
 		waterGameObject.SetActive(false);
+	}
+
+	public void StartWatchingForTextboxEnd () {
+		watchForTxtbxEnd = true;
 	}
 }
