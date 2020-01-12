@@ -8,7 +8,6 @@ public class CutsceneFallDownShrineHelper : MonoBehaviour {
 	public Animator gateAnimator;
 	public GameObject waterGameObject;
 	public TextboxHandler handlerToWatch;
-	private Animator myAnimator;
 
 	void Start () {
 #if UNITY_EDITOR
@@ -38,7 +37,6 @@ public class CutsceneFallDownShrineHelper : MonoBehaviour {
 			return;
 		}
 #endif
-		myAnimator = GetComponent<Animator>();
 	}
 	
 	private bool watchForTxtbxEnd = false;

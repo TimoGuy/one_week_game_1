@@ -110,6 +110,7 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 
 	public void ResetMvtBuildup () {
 		mvtBuildup = 0;
+		SendMessage("SetRunningSpeed", 0.0f);
 	}
 
 	private Vector3 __pos;

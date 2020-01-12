@@ -18,6 +18,7 @@ public class NPCActionHandler : MonoBehaviour {
 	void Update () {
 		if (npcInContact != null &&
 			Input.GetButtonDown("Action")) {
+			SendMessage("ResetMvtBuildup", SendMessageOptions.RequireReceiver);
 			npcInContact.SendMessage("NPC_Action", SendMessageOptions.RequireReceiver);
 			RemoveNPCRef();	// Require enter into trigger again
 		}

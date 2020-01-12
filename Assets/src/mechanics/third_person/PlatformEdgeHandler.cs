@@ -128,9 +128,17 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		return IsOnGround(out garb);
 	}
 
+	private float jumpFalloffTimer = 0;
+	private float jumpFalloffDebounce = 0.2f;
 	private void UpdateJump () {
+		if (IsOnGround()) {
+			jumpFalloffTimer = 0;
+		} else {
+			jumpFalloffTimer += Time.deltaTime;
+		}
+
 		if (Input.GetButtonDown("Jump") &&
-			IsOnGround()) {
+			jumpFalloffTimer < jumpFalloffDebounce) {
 			SendMessage("RequestJump");
 		}
 	}
