@@ -55,7 +55,7 @@ public class TextboxHandler : MonoBehaviour {
 		debounce -= Time.deltaTime;
 		textMesh.text = textMessages[textMsgInd];
 
-		if (Input.GetButtonDown("Action") && debounce <= 0) {
+		if (Input.anyKeyDown && debounce <= 0) {
 			textMsgInd++;
 			debounce = DEBOUNCE_AMT;
 		}
