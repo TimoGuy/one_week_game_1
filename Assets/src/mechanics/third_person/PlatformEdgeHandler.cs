@@ -20,6 +20,13 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	
 	void FixedUpdate () {
 		FetchIsOnGround();
+		if (playerState == PlayerState.NORMAL) {
+			if (!IsOnGround()) {
+				IncrementMidairTime(Time.deltaTime);
+			} else {
+				SetRespawnPoint(transform.position);
+			}
+		}
 	}
 
 	public bool overrideEh;
@@ -31,9 +38,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 
 				if (!IsOnGround()) {
 					UpdateGrabEdgeWhileMidair();
-					IncrementMidairTime(Time.deltaTime);
 				} else {
-					SetRespawnPoint(transform.position);
 					bool approaching = playerCC.velocity.x != 0 || playerCC.velocity.z != 0;
 					if (approaching) {
 						UpdateClimbWallWhileMoving();
@@ -349,6 +354,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 			transform.position = respawnPosition;
 			SetRespawnPoint(transform.position);
 			player.ResetMvtBuildup();
+			isOnGround = true;
 		}
 	}
 }
