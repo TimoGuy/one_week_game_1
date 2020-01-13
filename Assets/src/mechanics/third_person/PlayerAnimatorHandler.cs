@@ -30,7 +30,10 @@ public class PlayerAnimatorHandler : MonoBehaviour {
 	}
 
 	void SetHasSword (bool hasSword) {
-		playerAnimator.SetFloat("Blend_HasSword", hasSword ? 1.0f : 0.0f);
+		float wantedVal = hasSword ? 1.0f : 0.0f;
+		if (playerAnimator.GetFloat("Blend_HasSword") != wantedVal) {
+			playerAnimator.SetFloat("Blend_HasSword", hasSword ? 1.0f : 0.0f);
+		}
 	}
 
 	void TurnOnMidair () {

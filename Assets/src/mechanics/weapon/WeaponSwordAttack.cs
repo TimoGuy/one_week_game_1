@@ -7,13 +7,12 @@ public class WeaponSwordAttack : MonoBehaviour {
 	public Transform weaponSword;
 	public string attackVariantType = "none";
 	private Animator weaponSword_animator;
-	private bool assumeHasModelSword = false;
 
 	// Use this for initialization
 	void Start () {
 		weaponSword_animator = weaponSword.GetComponent<Animator>();
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		if (IsSwordEnabled()) {
@@ -28,14 +27,8 @@ public class WeaponSwordAttack : MonoBehaviour {
 	}
 
 	private bool IsSwordEnabled () {
-		if (assumeHasModelSword ==
-			modelSword.activeInHierarchy) {
-			return assumeHasModelSword;
-		}
-
-		assumeHasModelSword = modelSword.activeInHierarchy;
-		SendMessageUpwards("SetHasSword", assumeHasModelSword);
-		return assumeHasModelSword;
+		SendMessageUpwards("SetHasSword", modelSword.activeInHierarchy);
+		return modelSword.activeInHierarchy;
 	}
 
 	private bool CheckWantToAttack () {
