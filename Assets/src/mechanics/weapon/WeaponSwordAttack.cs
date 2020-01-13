@@ -25,7 +25,7 @@ public class WeaponSwordAttack : MonoBehaviour {
 	}
 
 	private bool CheckWantToAttack () {
-		return Input.GetButtonDown("Fire1");
+		return Input.GetButtonDown("Fire1") && player.isActiveAndEnabled;
 	}
 
 	private void Attack () {

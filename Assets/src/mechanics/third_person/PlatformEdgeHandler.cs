@@ -15,7 +15,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	void Start () {
 		player = GetComponent<ThirdPersonControllerInput>();
 		playerCC = GetComponent<CharacterController>();
-		isOnGround = false;
+		FetchIsOnGround();
 	}
 	
 	void FixedUpdate () {
@@ -138,6 +138,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		}
 
 		if (Input.GetButtonDown("Jump") &&
+			player.isActiveAndEnabled &&
 			jumpFalloffTimer < jumpFalloffDebounce) {
 			SendMessage("RequestJump");
 		}
