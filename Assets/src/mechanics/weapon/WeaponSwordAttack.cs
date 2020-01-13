@@ -3,10 +3,11 @@ using System.Collections;
 
 public class WeaponSwordAttack : MonoBehaviour {
 	public ThirdPersonControllerInput player;
+	public GameObject modelSword;
 	public Transform weaponSword;
 	public string attackVariantType = "none";
-
 	private Animator weaponSword_animator;
+	private bool assumeHasModelSword = false;
 
 	// Use this for initialization
 	void Start () {
@@ -15,8 +16,10 @@ public class WeaponSwordAttack : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (CheckWantToAttack()) {
-			Attack();
+		if (IsSwordEnabled()) {
+			if (CheckWantToAttack()) {
+				Attack();
+			}
 		}
 
 		if (IsCurrentlyIdling()) {
@@ -24,8 +27,20 @@ public class WeaponSwordAttack : MonoBehaviour {
 		}
 	}
 
+	private bool IsSwordEnabled () {
+		if (assumeHasModelSword ==
+			modelSword.activeInHierarchy) {
+			return assumeHasModelSword;
+		}
+
+		assumeHasModelSword = modelSword.activeInHierarchy;
+		SendMessageUpwards("SetHasSword", assumeHasModelSword);
+		return assumeHasModelSword;
+	}
+
 	private bool CheckWantToAttack () {
-		return Input.GetButtonDown("Fire1") && player.isActiveAndEnabled;
+		return Input.GetButtonDown("Fire1") &&
+			player.isActiveAndEnabled;
 	}
 
 	private void Attack () {

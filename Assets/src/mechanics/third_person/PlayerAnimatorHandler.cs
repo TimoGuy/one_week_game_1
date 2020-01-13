@@ -29,6 +29,10 @@ public class PlayerAnimatorHandler : MonoBehaviour {
 		playerAnimator.SetFloat("Blend_Running", speed);
 	}
 
+	void SetHasSword (bool hasSword) {
+		playerAnimator.SetFloat("Blend_HasSword", hasSword ? 1.0f : 0.0f);
+	}
+
 	void TurnOnMidair () {
 		playerAnimator.SetBool("Midair", true);
 	}
