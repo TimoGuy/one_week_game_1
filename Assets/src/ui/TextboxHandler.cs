@@ -46,23 +46,12 @@ public class TextboxHandler : MonoBehaviour {
 	}
 
 	void Update () {
-		if (textMessages == null ||
-			textMsgInd >= textMessages.Length) {
-			this.enabled = false;
-			return;
-		}
-
-		debounce -= Time.deltaTime;
-		textMesh.text = textMessages[textMsgInd];
-
-		if (Input.anyKeyDown && debounce <= 0) {
-			textMsgInd++;
-			debounce = DEBOUNCE_AMT;
-		}
+		ProcessTextMessages();
 	}
 
 	public void LoadTextboxes (string[] messages) {
 		this.textMessages = messages;
+		ProcessTextMessages();
 		this.enabled = true;
 		debounce = DEBOUNCE_AMT;
 	}
@@ -73,6 +62,23 @@ public class TextboxHandler : MonoBehaviour {
 			if (gameObjTemp != null) {
 				player = gameObjTemp.GetComponent<ThirdPersonControllerInput>();
 			}
+		}
+	}
+
+	private void ProcessTextMessages () {
+		if (textMessages == null ||
+			textMsgInd >= textMessages.Length) {
+			textMesh.text = string.Empty;
+			this.enabled = false;
+			return;
+		}
+
+		debounce -= Time.deltaTime;
+		textMesh.text = textMessages[textMsgInd];
+
+		if (Input.anyKeyDown && debounce <= 0) {
+			textMsgInd++;
+			debounce = DEBOUNCE_AMT;
 		}
 	}
 }
