@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class TestPlayAgain : MonoBehaviour {
+	public string gotoScene = "scene_fight_arena";
 
 	// Use this for initialization
 	void Start () {
@@ -12,7 +13,7 @@ public class TestPlayAgain : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (Input.anyKeyDown) {
-			SceneManager.LoadScene("scene_fight_arena");
+			SceneManager.LoadScene(gotoScene);
 		}
 	}
 }
