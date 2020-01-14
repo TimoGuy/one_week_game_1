@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Animator))]
 public class BossFightHandler : MonoBehaviour {
@@ -43,10 +42,6 @@ public class BossFightHandler : MonoBehaviour {
 		float playerAngFromOrigin =
 			Mathf.Atan2(player.position.z, player.position.x) * Mathf.Rad2Deg;
 		progLazerContainer.localRotation = Quaternion.Euler(0, -playerAngFromOrigin + 180, 0);
-	}
-
-	void BossDieEvent () {
-		SceneManager.LoadScene("scene_defeated_boss");
 	}
 
 	// Received Message
