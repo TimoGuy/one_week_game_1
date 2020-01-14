@@ -3,6 +3,7 @@ using System.Collections;
 
 public class CutsceneGotoSleepHelper : MonoBehaviour {
 	public GameObject playerGameObj;
+	public UnityStandardAssets.ImageEffects.BloomOptimized mainCamBloom;
 	public Animator myCharPuppetAnimator;
 	public GameObject myContainer;
 	public TextboxHandler handlerToWatch;
@@ -13,6 +14,11 @@ public class CutsceneGotoSleepHelper : MonoBehaviour {
 #if UNITY_EDITOR
 		if (playerGameObj == null) {
 			Debug.LogError("playerGameObj must not be null");
+			UnityEditor.EditorApplication.isPlaying = false;
+			return;
+		}
+		if (mainCamBloom == null) {
+			Debug.LogError("mainCamBloom must not be null");
 			UnityEditor.EditorApplication.isPlaying = false;
 			return;
 		}
@@ -72,6 +78,7 @@ public class CutsceneGotoSleepHelper : MonoBehaviour {
 	}
 
 	public void ShutDownCutscene () {
+		mainCamBloom.enabled = true;
 		GameObject.Destroy(myContainer);
 	}
 
