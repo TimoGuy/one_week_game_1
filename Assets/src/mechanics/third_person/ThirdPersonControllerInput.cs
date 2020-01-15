@@ -251,4 +251,8 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	private void PlayHurtSound () {
 		GetComponent<AudioSource>().Play(0);
 	}
+
+	public bool IsHurt () {
+		return currentMode == EnemyWeapon.AttackEffectType.NORMAL;
+	}
 }
