@@ -2,14 +2,15 @@
 using System.Collections;
 
 public class CrawlerFollowPlayer : MonoBehaviour {
-	public float recognizeIsNearThreshold = 5;
-	public float followSpeed = 1;
-	public float acceleration = 0.05f;
+	public float recognizeIsNearThreshold = 15;
+	public float followSpeed = 5;
+	public float acceleration = 0.1f;
 	public float turnSpeed = 10;
 	public float deadZoneTurn = 5;
-	public Rigidbody myRigidbody;
+	public float gravity = 1.5f;
 	public ThirdPersonControllerInput player;
-	private EnemyWeapon enemyWeapon;
+	public Animator myAnimator;
+	private CharacterController myCC;
 	private float currentSpeed = 0;
 
 	// Use this for initialization
@@ -19,12 +20,12 @@ public class CrawlerFollowPlayer : MonoBehaviour {
 			Debug.LogError("player assignment is required");
 			UnityEditor.EditorApplication.isPlaying = false;
 		}
-		if (myRigidbody == null) {
-			Debug.LogError("myRigidbody assignment is required");
+		if (myAnimator == null) {
+			Debug.LogError("myAnimator assignment is required");
 			UnityEditor.EditorApplication.isPlaying = false;
 		}
 #endif
-		enemyWeapon = GetComponentInChildren<EnemyWeapon>();
+		myCC = GetComponent<CharacterController>();
 	}
 	
 	// Update is called once per frame
@@ -33,12 +34,10 @@ public class CrawlerFollowPlayer : MonoBehaviour {
 		lookDirection.y = 0;
 
 		if (Vector3.Distance(lookDirection, Vector3.zero) < recognizeIsNearThreshold) {
-			float direction = //ToRegularAngleBounds(
+			float direction =
 				90 - Mathf.Atan2(lookDirection.z, lookDirection.x) * Mathf.Rad2Deg;
-			//);
 
 			float deltaDir = Mathf.DeltaAngle(transform.rotation.eulerAngles.y, direction);
-			// Debug.Log("Lookdir: " + lookDirection + ";;; dir: " + direction + ";;; myDir: " + transform.rotation.eulerAngles.y + ";;; deltaDir: " + deltaDir);
 			if (Mathf.Abs(deltaDir) >= deadZoneTurn) {
 				transform.rotation =
 					Quaternion.Euler(new Vector3(
@@ -67,13 +66,15 @@ public class CrawlerFollowPlayer : MonoBehaviour {
 			// Stop
 			currentSpeed = Mathf.Lerp(currentSpeed, 0, acceleration);
 		}
-		if (myRigidbody == null) {
-			this.enabled = false;		// This means the underlying enemy is dead
+		if (myAnimator == null) {
+			this.enabled = false;
+			myCC.enabled = false;
 			return;
 		}
-		Debug.Log("Sppeeed: " + (-(transform.rotation * Vector3.forward) * currentSpeed));
-		// myRigidbody.AddForce(-(transform.rotation * Vector3.forward) * currentSpeed, ForceMode.Impulse);
-		myRigidbody.velocity = -(transform.rotation * Vector3.forward) * currentSpeed;
+		myAnimator.SetFloat("Blend_Walk", Mathf.Abs(currentSpeed / followSpeed));
+		Vector3 moveVec = -(transform.rotation * Vector3.forward) * currentSpeed;
+		moveVec.y = myCC.velocity.y - gravity;
+		myCC.Move(moveVec * Time.deltaTime);
 	}
 
 	private static float ToRegularAngleBounds (float angle) {
