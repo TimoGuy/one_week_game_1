@@ -3,6 +3,7 @@ using System.Collections;
 
 public class CrawlerFollowPlayer : MonoBehaviour {
 	public float recognizeIsNearThreshold = 15;
+	public float verticalNearThreshold = 2;
 	public float followSpeed = 5;
 	public float acceleration = 0.1f;
 	public float turnSpeed = 10;
@@ -10,6 +11,7 @@ public class CrawlerFollowPlayer : MonoBehaviour {
 	public float gravity = 1.5f;
 	public ThirdPersonControllerInput player;
 	public Animator myAnimator;
+	public TextboxHandler textboxHandlerForKnowWhenToDisable;
 	private CharacterController myCC;
 	private float currentSpeed = 0;
 
@@ -24,16 +26,24 @@ public class CrawlerFollowPlayer : MonoBehaviour {
 			Debug.LogError("myAnimator assignment is required");
 			UnityEditor.EditorApplication.isPlaying = false;
 		}
+		if (textboxHandlerForKnowWhenToDisable == null) {
+			Debug.LogError("textboxHandlerForKnowWhenToDisable assignment is required");
+			UnityEditor.EditorApplication.isPlaying = false;
+		}
 #endif
 		myCC = GetComponent<CharacterController>();
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
+		if (textboxHandlerForKnowWhenToDisable.enabled) return;
+
 		Vector3 lookDirection = player.transform.position - transform.position;
+		float verticalDiff = Mathf.Abs(lookDirection.y);
 		lookDirection.y = 0;
 
-		if (Vector3.Distance(lookDirection, Vector3.zero) < recognizeIsNearThreshold) {
+		if (verticalDiff < verticalNearThreshold &&
+			Vector3.Distance(lookDirection, Vector3.zero) < recognizeIsNearThreshold) {
 			float direction =
 				90 - Mathf.Atan2(lookDirection.z, lookDirection.x) * Mathf.Rad2Deg;
 
