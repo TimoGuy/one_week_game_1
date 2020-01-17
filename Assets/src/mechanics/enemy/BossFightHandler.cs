@@ -32,6 +32,7 @@ public class BossFightHandler : MonoBehaviour {
 
 		SendMessage(
 			"Spider_DoLazer",
+			animator.GetBool("Phase2") &&
 			animator.GetBool("DoLazerBeam")
 		);
 	}
