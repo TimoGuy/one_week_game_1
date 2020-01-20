@@ -8,6 +8,7 @@ public class CutsceneGotoSleepHelper : MonoBehaviour {
 	public GameObject myContainer;
 	public TextboxHandler handlerToWatch;
 	public GSFirstArea gameStateManager;
+	public GameObject hideThisCrawler;
 	private Animator myAnimator;
 
 	void Start () {
@@ -42,6 +43,11 @@ public class CutsceneGotoSleepHelper : MonoBehaviour {
 			UnityEditor.EditorApplication.isPlaying = false;
 			return;
 		}
+		if (hideThisCrawler == null) {
+			Debug.LogError("hideThisCrawler must not be null");
+			UnityEditor.EditorApplication.isPlaying = false;
+			return;
+		}
 #endif
 		myAnimator = GetComponent<Animator>();
 	}
@@ -59,10 +65,12 @@ public class CutsceneGotoSleepHelper : MonoBehaviour {
 
 	void OnEnable () {
 		playerGameObj.SetActive(false);
+		hideThisCrawler.SetActive(false);
 	}
 
 	void OnDisable () {
 		playerGameObj.SetActive(true);
+		hideThisCrawler.SetActive(true);
 	}
 
 	public void TriggerPlayerLiedown () {
