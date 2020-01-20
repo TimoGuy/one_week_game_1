@@ -2,6 +2,10 @@
 using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour {
+	void Start () {
+		Cursor.lockState = CursorLockMode.None;
+	}
+
 	public void StartGame () {
 		SceneManager.LoadScene("scene_first_area");
 	}
