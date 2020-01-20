@@ -5,6 +5,7 @@ public class BossFightDamageHandle : MonoBehaviour {
 	public BossFightHandler bossFightHandler;
 	public LifeManager lifeManager;
 	public GameObject bossDieCutsceneContainer;
+	public ScrollingTextures hurtAnimHandler;
 	private float stunTimer;
 
 	void Start () {
@@ -21,6 +22,10 @@ public class BossFightDamageHandle : MonoBehaviour {
 			Debug.LogError("bossDieCutsceneContainer assignment is required");
 			UnityEditor.EditorApplication.isPlaying = false;
 		}
+		if (hurtAnimHandler == null) {
+			Debug.LogError("hurtAnimHandler assignment is required");
+			UnityEditor.EditorApplication.isPlaying = false;
+		}
 #endif
 
 		bossFightHandler.SetLifeInAnimator(lifeManager.GetCurrentLife());
@@ -29,8 +34,10 @@ public class BossFightDamageHandle : MonoBehaviour {
 	void Update () {
 		if (stunTimer > 0) {
 			stunTimer -= Time.deltaTime;
+			hurtAnimHandler.hurt = true;
 		} else if (stunTimer < 0) {
 			stunTimer = 0;
+			hurtAnimHandler.hurt = false;
 		}
 	}
 
