@@ -2,9 +2,18 @@
 using System.Collections;
 
 public class TestAnimHelper : MonoBehaviour {
+	public Transform reverseRotation;
+	
 	void CalledByAnimator_Rotate45 () {
-		var ang = transform.rotation.eulerAngles;
-		ang.y += 45;
-		transform.rotation = Quaternion.Euler(ang);
+		RotateYByAmount(transform, 45);
+		
+		if (reverseRotation != null)
+			RotateYByAmount(reverseRotation, -45);
+	}
+
+	private void RotateYByAmount (Transform myTransform, float degrees) {
+		var ang = myTransform.rotation.eulerAngles;
+		ang.y += degrees;
+		myTransform.rotation = Quaternion.Euler(ang);
 	}
 }
