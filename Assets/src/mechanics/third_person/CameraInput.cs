@@ -63,6 +63,7 @@ public class CameraInput : MonoBehaviour {
 		Vector3 dist = new Vector3(0, 0, -distance);
 		Quaternion rot = Quaternion.Euler(rotY, rotX, 0);
 		dist.z = -GetDistanceWithoutColliding(rot * dist, distance);
+		// dist.z = dist.z < -minDistance ? dist.z : -minDistance;
 		return targetLookAt.position + (rot * dist);
 	}
 
