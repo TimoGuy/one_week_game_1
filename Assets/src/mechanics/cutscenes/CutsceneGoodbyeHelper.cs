@@ -8,6 +8,7 @@ public class CutsceneGoodbyeHelper : MonoBehaviour {
 	public Animator npcFriendAnimator;
 	public TextboxHandler handlerToWatch;
 	public GSFirstArea gameStateManager;
+	public AudioSource sayGoodbyeAS;
 	private Animator myAnimator;
 
 	void Start () {
@@ -42,6 +43,11 @@ public class CutsceneGoodbyeHelper : MonoBehaviour {
 			UnityEditor.EditorApplication.isPlaying = false;
 			return;
 		}
+		if (sayGoodbyeAS == null) {
+			Debug.LogError("sayGoodbyeAS must not be null");
+			UnityEditor.EditorApplication.isPlaying = false;
+			return;
+		}
 #endif
 		myAnimator = GetComponent<Animator>();
 	}
@@ -59,10 +65,12 @@ public class CutsceneGoodbyeHelper : MonoBehaviour {
 
 	void OnEnable () {
 		playerGameObj.SetActive(false);
+		sayGoodbyeAS.enabled = true;
 	}
 
 	void OnDisable () {
 		playerGameObj.SetActive(true);
+		sayGoodbyeAS.enabled = false;
 	}
 	
 	public void TriggerDoTurnAround () {
