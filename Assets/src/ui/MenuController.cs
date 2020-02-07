@@ -2,6 +2,9 @@
 using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour {
+	public GameObject howToPlayText;
+	public GameObject creditsText;
+
 	void Start () {
 		Cursor.lockState = CursorLockMode.None;
 	}
@@ -11,11 +14,13 @@ public class MenuController : MonoBehaviour {
 	}
 	
 	public void HowToPlay () {
-		Debug.LogError("HowToPlay() not implemented!");
+		howToPlayText.SetActive(true);
+		creditsText.SetActive(false);
 	}
 	
 	public void Credits () {
-		Debug.LogError("Credits() not implemented!");
+		creditsText.SetActive(true);
+		howToPlayText.SetActive(false);
 	}
 
 	public void ExitApplication () {
