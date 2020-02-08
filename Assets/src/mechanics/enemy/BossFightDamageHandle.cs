@@ -6,6 +6,7 @@ public class BossFightDamageHandle : MonoBehaviour {
 	public LifeManager lifeManager;
 	public GameObject bossDieCutsceneContainer;
 	public ScrollingTextures hurtAnimHandler;
+	public AudioSource hurtSound;
 	private float stunTimer;
 
 	void Start () {
@@ -26,6 +27,10 @@ public class BossFightDamageHandle : MonoBehaviour {
 			Debug.LogError("hurtAnimHandler assignment is required");
 			UnityEditor.EditorApplication.isPlaying = false;
 		}
+		if (hurtSound == null) {
+			Debug.LogError("hurtSound assignment is required");
+			UnityEditor.EditorApplication.isPlaying = false;
+		}
 #endif
 
 		bossFightHandler.SetLifeInAnimator(lifeManager.GetCurrentLife());
@@ -44,6 +49,7 @@ public class BossFightDamageHandle : MonoBehaviour {
 	void ReceiveDamage (int damage) {
 		if (stunTimer > 0) return;
 		stunTimer += 0.25f;
+		hurtSound.Play(0);
 		lifeManager.SendMessage("DecrementLife", damage);
 		bossFightHandler.SetLifeInAnimator(lifeManager.GetCurrentLife());
 		if (lifeManager.GetCurrentLife() <= 0) {

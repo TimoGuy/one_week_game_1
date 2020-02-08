@@ -249,6 +249,7 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	}
 
 	private void PlayHurtSound () {
+		GetComponent<AudioSource>().pitch = 1;
 		GetComponent<AudioSource>().Play(0);
 	}
 

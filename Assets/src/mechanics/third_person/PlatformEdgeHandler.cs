@@ -25,7 +25,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 		if (playerState == PlayerState.NORMAL) {
 			if (IsOnGround() && cameraInput.enabled) {
 				SetRespawnPoint(transform.position);
-			} else if (!cameraInput.enabled) {
+			} else  {
 				IncrementMidairTime(Time.deltaTime);
 			}
 		}
@@ -356,6 +356,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	private void SetRespawnPoint (Vector3 pos) {
 		respawnPosition = pos;
 		currentMidairTime = 0;
+		BottomlessPitHandler.SetEnabledCameraInput(true);
 	}
 
 	private void IncrementMidairTime (float time) {

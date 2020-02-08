@@ -57,7 +57,6 @@ public class CutsceneGoodbyeHelper : MonoBehaviour {
 	void FixedUpdate () {
 		if (sayGoodbyeAS.enabled) {
 			sayGoodbyeAS.volume -= fadeOutInterval * Time.deltaTime;
-			Debug.Log(sayGoodbyeAS.volume);
 			if (sayGoodbyeAS.volume <= 0) {
 				sayGoodbyeAS.Stop();
 				sayGoodbyeAS.enabled = false;
@@ -102,8 +101,6 @@ public class CutsceneGoodbyeHelper : MonoBehaviour {
 	}
 
 	public void FadeOutMusic (float amount) {
-		Debug.Log("Start heart!!!!");
-		Debug.Log(amount);
 		fadeOutInterval = Mathf.Abs(amount);
 	}
 }
