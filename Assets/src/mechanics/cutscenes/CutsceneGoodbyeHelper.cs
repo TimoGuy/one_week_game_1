@@ -9,6 +9,7 @@ public class CutsceneGoodbyeHelper : MonoBehaviour {
 	public TextboxHandler handlerToWatch;
 	public GSFirstArea gameStateManager;
 	public AudioSource sayGoodbyeAS;
+	private float fadeOutInterval = 0;
 	private Animator myAnimator;
 
 	void Start () {
@@ -54,6 +55,15 @@ public class CutsceneGoodbyeHelper : MonoBehaviour {
 
 	private bool watchForTxtbxEnd = false;
 	void FixedUpdate () {
+		if (sayGoodbyeAS.enabled) {
+			sayGoodbyeAS.volume -= fadeOutInterval * Time.deltaTime;
+			Debug.Log(sayGoodbyeAS.volume);
+			if (sayGoodbyeAS.volume <= 0) {
+				sayGoodbyeAS.Stop();
+				sayGoodbyeAS.enabled = false;
+			}
+		}
+
 		if (!watchForTxtbxEnd) return;
 
 		if (!handlerToWatch.enabled) {
@@ -65,12 +75,10 @@ public class CutsceneGoodbyeHelper : MonoBehaviour {
 
 	void OnEnable () {
 		playerGameObj.SetActive(false);
-		sayGoodbyeAS.enabled = true;
 	}
 
 	void OnDisable () {
 		playerGameObj.SetActive(true);
-		sayGoodbyeAS.enabled = false;
 	}
 	
 	public void TriggerDoTurnAround () {
@@ -91,5 +99,11 @@ public class CutsceneGoodbyeHelper : MonoBehaviour {
 
 	public void MoveToGameState (int index) {
 		gameStateManager.gameStateIndex = index;
+	}
+
+	public void FadeOutMusic (float amount) {
+		Debug.Log("Start heart!!!!");
+		Debug.Log(amount);
+		fadeOutInterval = Mathf.Abs(amount);
 	}
 }

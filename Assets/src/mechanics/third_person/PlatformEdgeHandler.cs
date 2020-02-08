@@ -6,6 +6,7 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	public PlayerState playerState = PlayerState.NORMAL;
 	private ThirdPersonControllerInput player;
 	private CharacterController playerCC;
+	private CameraInput cameraInput;
 
 	// Use this for respawning
 	private Vector3 respawnPosition;
@@ -15,16 +16,17 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	void Start () {
 		player = GetComponent<ThirdPersonControllerInput>();
 		playerCC = GetComponent<CharacterController>();
+		cameraInput = player.myCamera.GetComponent<CameraInput>();
 		FetchIsOnGround();
 	}
 	
 	void FixedUpdate () {
 		FetchIsOnGround();
 		if (playerState == PlayerState.NORMAL) {
-			if (!IsOnGround()) {
-				IncrementMidairTime(Time.deltaTime);
-			} else {
+			if (IsOnGround() && cameraInput.enabled) {
 				SetRespawnPoint(transform.position);
+			} else if (!cameraInput.enabled) {
+				IncrementMidairTime(Time.deltaTime);
 			}
 		}
 	}

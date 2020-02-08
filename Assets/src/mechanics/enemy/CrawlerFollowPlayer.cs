@@ -43,7 +43,8 @@ public class CrawlerFollowPlayer : MonoBehaviour {
 		lookDirection.y = 0;
 
 		if (verticalDiff < verticalNearThreshold &&
-			Vector3.Distance(lookDirection, Vector3.zero) < recognizeIsNearThreshold) {
+			Vector3.Distance(lookDirection, Vector3.zero) < recognizeIsNearThreshold &&
+			!Physics.Linecast(transform.position, player.transform.position, 1 << LayerMask.NameToLayer("Ground"))) {
 			float direction =
 				90 - Mathf.Atan2(lookDirection.z, lookDirection.x) * Mathf.Rad2Deg;
 
