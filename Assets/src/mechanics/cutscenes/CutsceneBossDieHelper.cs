@@ -6,6 +6,8 @@ public class CutsceneBossDieHelper : MonoBehaviour {
 	public GameObject playerContainer;
 	public GameObject bossContainer;
 	public TextboxHandler handlerToWatch;
+	public AudioSource darkWorldBgmAS;
+	private float fadeOutInterval = 0;
 
 	void Start () {
 #if UNITY_EDITOR
@@ -24,6 +26,11 @@ public class CutsceneBossDieHelper : MonoBehaviour {
 			UnityEditor.EditorApplication.isPlaying = false;
 			return;
 		}
+		if (darkWorldBgmAS == null) {
+			Debug.LogError("darkWorldBgmAS must not be null");
+			UnityEditor.EditorApplication.isPlaying = false;
+			return;
+		}
 #endif
 
 		playerContainer.SetActive(false);
@@ -32,6 +39,14 @@ public class CutsceneBossDieHelper : MonoBehaviour {
 
 	private bool watchForTxtbxEnd = false;
 	void FixedUpdate () {
+		if (darkWorldBgmAS.enabled) {
+			darkWorldBgmAS.volume -= fadeOutInterval * Time.deltaTime;
+			if (darkWorldBgmAS.volume <= 0) {
+				darkWorldBgmAS.Stop();
+				darkWorldBgmAS.enabled = false;
+			}
+		}
+
 		if (!watchForTxtbxEnd) return;
 
 		if (!handlerToWatch.enabled) {
@@ -45,5 +60,9 @@ public class CutsceneBossDieHelper : MonoBehaviour {
 
 	void BossDieEvent () {
 		SceneManager.LoadScene("scene_defeated_boss");
+	}
+
+	public void FadeOutMusic (float amount) {
+		fadeOutInterval = Mathf.Abs(amount);
 	}
 }

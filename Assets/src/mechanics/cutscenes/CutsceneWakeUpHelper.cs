@@ -5,6 +5,7 @@ public class CutsceneWakeUpHelper : MonoBehaviour {
 	public GameObject playerGameObj;
 	public GameObject myContainer;
 	public TextboxHandler handlerToWatch;
+	public AudioSource beginningSongAS;
 	private Animator myAnimator;
 
 	void Start () {
@@ -21,6 +22,11 @@ public class CutsceneWakeUpHelper : MonoBehaviour {
 		}
 		if (handlerToWatch == null) {
 			Debug.LogError("handlerToWatch must not be null");
+			UnityEditor.EditorApplication.isPlaying = false;
+			return;
+		}
+		if (beginningSongAS == null) {
+			Debug.LogError("beginningSongAS must not be null");
 			UnityEditor.EditorApplication.isPlaying = false;
 			return;
 		}
@@ -45,6 +51,7 @@ public class CutsceneWakeUpHelper : MonoBehaviour {
 
 	public void ReenablePlayer () {
 		playerGameObj.SetActive(true);
+		beginningSongAS.Play();
 	}
 
 	public void LockCursor () {

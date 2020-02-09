@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class GSFirstArea : MonoBehaviour {
 	public int gameStateIndex = 0;
@@ -43,6 +44,7 @@ public class GSFirstArea : MonoBehaviour {
 			if (i == index) continue;
 			foreach (GameObject obj in _gameStateHolder[i]) {
 				if (obj == null) continue;
+				if (_gameStateHolder[index].Contains(obj)) continue;
 				obj.SetActive(false);
 			}
 		}

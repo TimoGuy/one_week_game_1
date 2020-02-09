@@ -8,6 +8,8 @@ public class CutsceneGoodbyeHelper : MonoBehaviour {
 	public Animator npcFriendAnimator;
 	public TextboxHandler handlerToWatch;
 	public GSFirstArea gameStateManager;
+	public AudioSource sayGoodbyeAS;
+	private float fadeOutInterval = 0;
 	private Animator myAnimator;
 
 	void Start () {
@@ -42,12 +44,25 @@ public class CutsceneGoodbyeHelper : MonoBehaviour {
 			UnityEditor.EditorApplication.isPlaying = false;
 			return;
 		}
+		if (sayGoodbyeAS == null) {
+			Debug.LogError("sayGoodbyeAS must not be null");
+			UnityEditor.EditorApplication.isPlaying = false;
+			return;
+		}
 #endif
 		myAnimator = GetComponent<Animator>();
 	}
 
 	private bool watchForTxtbxEnd = false;
 	void FixedUpdate () {
+		if (sayGoodbyeAS.enabled) {
+			sayGoodbyeAS.volume -= fadeOutInterval * Time.deltaTime;
+			if (sayGoodbyeAS.volume <= 0) {
+				sayGoodbyeAS.Stop();
+				sayGoodbyeAS.enabled = false;
+			}
+		}
+
 		if (!watchForTxtbxEnd) return;
 
 		if (!handlerToWatch.enabled) {
@@ -83,5 +98,9 @@ public class CutsceneGoodbyeHelper : MonoBehaviour {
 
 	public void MoveToGameState (int index) {
 		gameStateManager.gameStateIndex = index;
+	}
+
+	public void FadeOutMusic (float amount) {
+		fadeOutInterval = Mathf.Abs(amount);
 	}
 }
