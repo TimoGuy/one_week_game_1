@@ -356,7 +356,6 @@ public class PlatformEdgeHandler : MonoBehaviour {
 	private void SetRespawnPoint (Vector3 pos) {
 		respawnPosition = pos;
 		currentMidairTime = 0;
-		BottomlessPitHandler.SetEnabledCameraInput(true);
 	}
 
 	private void IncrementMidairTime (float time) {

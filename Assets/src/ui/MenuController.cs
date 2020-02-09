@@ -4,13 +4,16 @@ using UnityEngine.SceneManagement;
 public class MenuController : MonoBehaviour {
 	public GameObject howToPlayText;
 	public GameObject creditsText;
+	public MainMenuEventHandler mainMenuEventHandler;
+	private string myEvent;
 
 	void Start () {
 		Cursor.lockState = CursorLockMode.None;
 	}
 
 	public void StartGame () {
-		SceneManager.LoadScene("scene_first_area");
+		myEvent = "Start_Game";
+		mainMenuEventHandler.DoFadeOut();
 	}
 	
 	public void HowToPlay () {
@@ -24,6 +27,15 @@ public class MenuController : MonoBehaviour {
 	}
 
 	public void ExitApplication () {
-		Application.Quit();
+		myEvent = "Quit_Game";
+		mainMenuEventHandler.DoFadeOut();
+	}
+
+	public void ExecuteOnFadeOutFinish () {
+		if (myEvent == "Start_Game") {
+			SceneManager.LoadScene("scene_first_area");
+		} else if (myEvent == "Quit_Game") {
+			Application.Quit();
+		}
 	}
 }

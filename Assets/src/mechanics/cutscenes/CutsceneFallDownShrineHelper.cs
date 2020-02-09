@@ -8,6 +8,8 @@ public class CutsceneFallDownShrineHelper : MonoBehaviour {
 	public Animator gateAnimator;
 	public GameObject waterGameObject;
 	public TextboxHandler handlerToWatch;
+	public AudioSource bossBgmAS;
+	private float fadeOutInterval = 0;
 
 	void Start () {
 #if UNITY_EDITOR
@@ -36,11 +38,24 @@ public class CutsceneFallDownShrineHelper : MonoBehaviour {
 			UnityEditor.EditorApplication.isPlaying = false;
 			return;
 		}
+		if (bossBgmAS == null) {
+			Debug.LogError("bossBgmAS must not be null");
+			UnityEditor.EditorApplication.isPlaying = false;
+			return;
+		}
 #endif
 	}
 	
 	private bool watchForTxtbxEnd = false;
 	void FixedUpdate () {
+		if (bossBgmAS.enabled) {
+			bossBgmAS.volume -= fadeOutInterval * Time.deltaTime;
+			if (bossBgmAS.volume <= 0) {
+				bossBgmAS.Stop();
+				bossBgmAS.enabled = false;
+			}
+		}
+
 		if (!watchForTxtbxEnd) return;
 
 		if (!handlerToWatch.enabled) {
@@ -74,5 +89,9 @@ public class CutsceneFallDownShrineHelper : MonoBehaviour {
 
 	public void StartWatchingForTextboxEnd () {
 		watchForTxtbxEnd = true;
+	}
+
+	public void FadeOutMusic (float amount) {
+		fadeOutInterval = Mathf.Abs(amount);
 	}
 }
