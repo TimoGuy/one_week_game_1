@@ -33,6 +33,7 @@ public class MenuController : MonoBehaviour {
 
 	public void ExecuteOnFadeOutFinish () {
 		Camera.main.gameObject.SetActive(false);
+		GL.Clear(true, true, Color.black);
 
 		if (myEvent == "Start_Game") {
 			SceneManager.LoadScene("scene_first_area");
