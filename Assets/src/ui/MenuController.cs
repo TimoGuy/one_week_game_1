@@ -32,6 +32,8 @@ public class MenuController : MonoBehaviour {
 	}
 
 	public void ExecuteOnFadeOutFinish () {
+		Camera.main.gameObject.SetActive(false);
+
 		if (myEvent == "Start_Game") {
 			SceneManager.LoadScene("scene_first_area");
 		} else if (myEvent == "Quit_Game") {
