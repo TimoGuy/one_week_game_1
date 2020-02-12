@@ -18,6 +18,7 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 	public bool targetingMode;
 	private LockonTargeter targeterHandler;
 	private CameraInput cameraInput;
+	private SFXPlayer_Player sFXPlayer;
 
 	private EnemyWeapon.AttackEffectType currentMode = EnemyWeapon.AttackEffectType.NORMAL;
 
@@ -28,6 +29,7 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 		platformEdgeHandler = GetComponent<PlatformEdgeHandler>();
 		targeterHandler = GetComponent<LockonTargeter>();
 		cameraInput = myCamera.GetComponent<CameraInput>();
+		sFXPlayer = GetComponentInChildren<SFXPlayer_Player>();
 		ResetMvtBuildup();
 		SaveStartTransform();
 
@@ -180,6 +182,7 @@ public class ThirdPersonControllerInput : MonoBehaviour, IAttackReceiver {
 			_isJumping = true;
 			_reqJump = false;
 			SendMessage("TurnOnMidair");
+			sFXPlayer.SendMessage("Jump");
 		}
 
 		return yVelo;

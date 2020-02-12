@@ -7,7 +7,7 @@ public class NPCTextbox : MonoBehaviour {
 	[TextArea(3,10)]
 	public string[] textMessages;
 
-	void NPC_Action () {
+	public void NPC_Action () {
 #if UNITY_EDITOR
 		if (textboxHandler == null) {
 			Debug.LogError("textboxHandler must not be null");

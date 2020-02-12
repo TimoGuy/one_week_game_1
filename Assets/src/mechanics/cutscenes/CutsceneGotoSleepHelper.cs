@@ -10,6 +10,7 @@ public class CutsceneGotoSleepHelper : MonoBehaviour {
 	public GSFirstArea gameStateManager;
 	public GameObject hideThisCrawler;
 	private Animator myAnimator;
+	private NPCTextbox[] textboxes;
 
 	void Start () {
 #if UNITY_EDITOR
@@ -50,6 +51,7 @@ public class CutsceneGotoSleepHelper : MonoBehaviour {
 		}
 #endif
 		myAnimator = GetComponent<Animator>();
+		textboxes = GetComponents<NPCTextbox>();
 	}
 
 	private bool watchForTxtbxEnd = false;
@@ -92,5 +94,10 @@ public class CutsceneGotoSleepHelper : MonoBehaviour {
 
 	public void MoveToGameState (int index) {
 		gameStateManager.gameStateIndex = index;
+	}
+
+	public void HandleTextbox (int num) {
+		num = num >= textboxes.Length ? textboxes.Length - 1 : (num < 0 ? 0 : num);
+		textboxes[num].NPC_Action();
 	}
 }
